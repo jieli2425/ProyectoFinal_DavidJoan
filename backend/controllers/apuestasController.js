@@ -2,24 +2,20 @@ const Apuesta = require('../model/Apuesta');
 const Partido = require('../model/Partido');
 const Usuario = require('../model/Usuario');
 
-// Registrar una nueva apuesta
 const registrarApuesta = async (req, res) => {
   try {
     const { userId, partidoId, apuesta } = req.body;
 
-    // Verificar si el partido existe
     const partido = await Partido.findById(partidoId);
     if (!partido) {
       return res.status(404).json({ message: 'Partido no encontrado' });
     }
 
-    // Verificar si el usuario ya apostó en el partido
     const apuestaExistente = await Apuesta.findOne({ userId, partidoId });
     if (apuestaExistente) {
       return res.status(400).json({ message: 'Ya has apostado en este partido' });
     }
 
-    // Crear nueva apuesta
     const nuevaApuesta = new Apuesta({ userId, partidoId, apuesta });
     await nuevaApuesta.save();
 

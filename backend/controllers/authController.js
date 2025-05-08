@@ -2,12 +2,10 @@ const Usuario = require('../model/Usuario');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 
-// Registrar un nuevo usuario
 const registrarUsuario = async (req, res) => {
   try {
     const { nombre, email, password } = req.body;
 
-    // Verificar si el usuario ya existe
     const usuarioExistente = await Usuario.findOne({ email });
     if (usuarioExistente) {
       return res.status(400).json({ message: 'El usuario ya existe' });
