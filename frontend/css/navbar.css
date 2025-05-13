@@ -79,4 +79,5 @@ body {
 .logo-img {
   height: 40px;
   object-fit: contain;
+  cursor: pointer;
 }
