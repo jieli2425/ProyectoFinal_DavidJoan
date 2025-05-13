@@ -5,7 +5,6 @@ const Apuesta = require('../models/Apuesta');
 
 const router = express.Router();
 
-// Middleware de autenticación
 const auth = (req, res, next) => {
   const token = req.headers['authorization']?.split(' ')[1];
   if (!token) return res.status(401).json({ msg: 'Token requerido' });
@@ -69,6 +68,24 @@ router.patch('/:id/resultado', auth, admin, async (req, res) => {
     res.json(partido);
   } catch {
     res.status(500).json({ msg: 'Error al actualizar resultado' });
+  }
+});
+
+router.get('/premier-league', async (req, res) => {
+  try {
+    const partidos = await Partido.find({ competicion: 'Premier League' });
+    res.json(partidos);
+  } catch (err) {
+    res.status(500).json({ msg: 'Error al obtener partidos de la Premier League' });
+  }
+});
+
+router.get('/champions-league', async (req, res) => {
+  try {
+    const partidos = await Partido.find({ competicion: 'UEFA Champions League' });
+    res.json(partidos);
+  } catch (err) {
+    res.status(500).json({ msg: 'Error al obtener partidos de la Champions League' });
   }
 });
 

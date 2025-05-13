@@ -32,7 +32,7 @@ app.use('/api/usuarios', usuariosRoutes);
 
 setInterval(() => {
   footballDataServices.actualizarPartidos();
-}, 5 * 60 * 1000);
+}, 1 * 60 * 1000);
 
 app.use((err, req, res, next) => {
   console.error(err.stack);

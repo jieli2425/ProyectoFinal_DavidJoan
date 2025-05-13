@@ -21,14 +21,28 @@ import basketicono from '../assets/logobasket.png';
 const Home = () => {
   const [loginOpen, setLoginOpen] = useState(false);
   const [partidos, setPartidos] = useState([]);
+  const [partidosPremierLeague, setPartidosPremierLeague] = useState([]);
+  const [partidosChampionsLeague, setPartidosChampionsLeague] = useState([]);
+
 
   useEffect(() => {
     fetch('/api/partidos')
       .then(res => res.json())
       .then(setPartidos);
-  }, []);
+
+    fetch('/api/partidos/premier-league')
+    .then(res => res.json())
+    .then(setPartidosPremierLeague);
+
+    fetch('/api/partidos/champions-league')
+      .then(res => res.json())
+      .then(setPartidosChampionsLeague);
+    }, []);
+
 
   const partidosFutbol = partidos.filter(p => p.deporte === 'futbol');
+  // const partidosPremierLeague = partidosFutbol.filter(p => p.competicion === 'Premier League');
+  // const partidosChampionsLeague = partidosFutbol.filter(p => p.competicion === 'UEFA Champions League');
   const partidosBasquet = partidos.filter(p => p.deporte === 'basquet');
 
   const scrollToSection = (sectionId) => {
@@ -69,20 +83,20 @@ const Home = () => {
         {/* Partidos de cada liga */}
   
 
-<div id="liga-espanola">
-  <h2 style={{ display: 'flex', alignItems: 'center', color: '#1D3F5B' }}>
-    Liga EA SPORTS
-    <img src={laliga} alt="Logo EA Sports" style={{ height: '24px', marginLeft: '10px' }} />
-  </h2>
+        <div id="liga-espanola">
+          <h2 style={{ display: 'flex', alignItems: 'center', color: '#1D3F5B' }}>
+            Liga EA SPORTS
+            <img src={laliga} alt="Logo EA Sports" style={{ height: '24px', marginLeft: '10px' }} />
+          </h2>
 
-  {partidosFutbol.map(p => (
-    <div key={p._id} className="partido-card">
-      <span className="partido-equipos">{p.equipoLocal} vs {p.equipoVisitante}</span>
-      <input type="text" className="hora-input" value={new Date(p.fecha).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} readOnly />
-      <button className="btn btn-light btn-sm apostar-btn">Apostar</button>
-    </div>
-  ))}
-</div>
+          {partidosFutbol.map(p => (
+            <div key={p._id} className="partido-card">
+              <span className="partido-equipos">{p.equipoLocal} vs {p.equipoVisitante}</span>
+              <input type="text" className="hora-input" value={new Date(p.fecha).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} readOnly />
+              <button className="btn btn-light btn-sm apostar-btn" onClick={() => setLoginOpen(true)}>Apostar</button>
+            </div>
+          ))}
+        </div>
 
 
         <div id="premier-league">
@@ -100,12 +114,13 @@ const Home = () => {
               </tr>
             </thead>
             <tbody>
-            {partidosFutbol.map(p => (
-                <div key={p._id} className="partido-card">
-                  <span className="partido-equipos">{p.equipoLocal} vs {p.equipoVisitante}</span>
-                  <input type="text" className="hora-input" value={new Date(p.fecha).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} readOnly />
-                  <button className="btn btn-light btn-sm apostar-btn">Apostar</button>
-                </div>
+            {partidosPremierLeague.map(p => (
+                <tr key={p._id}>
+                  <td>{p.equipoLocal}</td>
+                  <td>{p.equipoVisitante}</td>
+                  <td>{new Date(p.fecha).toLocaleString()}</td>
+                  <td><button>Apostar</button></td>
+                </tr>
               ))}
             </tbody>
           </table>
@@ -126,15 +141,13 @@ const Home = () => {
               </tr>
             </thead>
             <tbody>
-            {partidosFutbol.map(p => (
-                p.competicion === 'Champions League' && (
-                  <tr key={p._id}>
-                    <td>{p.equipoLocal}</td>
-                    <td>{p.equipoVisitante}</td>
-                    <td>{new Date(p.fecha).toLocaleString()}</td>
-                    <td><button>Apostar</button></td>
-                  </tr>
-                )
+            {partidosChampionsLeague.map(p => (
+                <tr key={p._id}>
+                  <td>{p.equipoLocal}</td>
+                  <td>{p.equipoVisitante}</td>
+                  <td>{new Date(p.fecha).toLocaleString()}</td>
+                  <td><button>Apostar</button></td>
+                </tr>
               ))}
             </tbody>
           </table>
