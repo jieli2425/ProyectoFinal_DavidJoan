@@ -1,21 +1,19 @@
-/* archivo registro.css */
-
 body {
   display: flex;
   flex-direction: column;
-  min-height: 100vh; /* Asegura que la página ocupe toda la altura de la pantalla */
+  min-height: 100vh;
   margin: 0;
 }
 
 .registro-container {
-  max-width: 400px;
-  margin: 80px auto 20px; /* Ajuste para separar el formulario del navbar */
+  max-width: 600px; /* Más ancho */
+  margin: 80px auto 20px;
   padding: 30px;
   border: 1px solid #ddd;
   border-radius: 12px;
   background-color: #ffffff;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  flex-grow: 1; /* Hace que el formulario crezca para ocupar el espacio disponible */
+  flex-grow: 1;
 }
 
 .registro-container h2 {
@@ -31,11 +29,22 @@ body {
   border: 1px solid #ccc;
   border-radius: 6px;
   font-size: 14px;
+  background-color: #1D3F5B;
+  color: #ffffff;
+}
+
+.registro-input::placeholder {
+  color: #e0e0e0;
 }
 
 .registro-input:focus {
-  border-color: #007bff;
+  border-color: #1D3F5B;
   outline: none;
+}
+
+/* Específico para input tipo fecha */
+input[type="date"].registro-input {
+  color-scheme: dark; /* Algunos navegadores lo aplican */
 }
 
 .registro-error {
@@ -47,7 +56,7 @@ body {
 .registro-button {
   width: 100%;
   padding: 12px;
-  background-color: #007bff;
+  background-color: #1D3F5B;
   color: white;
   font-weight: bold;
   border: none;
@@ -63,12 +72,12 @@ body {
 }
 
 .registro-button:hover:not(:disabled) {
-  background-color: #0056b3;
+  background-color: #16344A;
 }
 
 /* Footer estilo */
 footer {
-  margin-top: auto; /* Asegura que el footer se quede al final de la página */
+  margin-top: auto;
   background-color: #f1f1f1;
   padding: 10px;
   text-align: center;

@@ -17,7 +17,17 @@ const registrarUsuario = async (req, res) => {
     const nuevoUsuario = new Usuario({ nombre, email, password: passwordEncriptada, monedas: 250 });
     await nuevoUsuario.save();
 
-    return res.status(201).json({ message: 'Usuario registrado con éxito', usuario: nuevoUsuario });
+    const token = jwt.sign(
+      { userId: nuevoUsuario._id, role: nuevoUsuario.role },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+
+    return res.status(201).json({
+      message: 'Usuario registrado con éxito',
+      token,
+      nombre: nuevoUsuario.nombre
+    });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: 'Error al registrar el usuario' });
@@ -38,9 +48,16 @@ const loginUsuario = async (req, res) => {
       return res.status(400).json({ message: 'Contraseña incorrecta' });
     }
 
-    const token = jwt.sign({ userId: usuario._id, role: usuario.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign(
+      { userId: usuario._id, role: usuario.role },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
 
-    return res.status(200).json({ token, nombre: usuario.nombre  });
+    return res.status(200).json({
+      token,
+      nombre: usuario.nombre
+    });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: 'Error al iniciar sesión' });
