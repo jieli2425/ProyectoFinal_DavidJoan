@@ -56,7 +56,8 @@ const loginUsuario = async (req, res) => {
 
     return res.status(200).json({
       token,
-      nombre: usuario.nombre
+      nombre: usuario.nombre,
+      isAdmin: usuario.isAdmin
     });
   } catch (error) {
     console.error(error);
