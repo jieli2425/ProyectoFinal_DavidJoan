@@ -5,7 +5,8 @@ import Registro from './pages/Registro';
 import Futbol from './pages/Futbol'; 
 import Basquet from './pages/Basquet';
 import HomeUsuario from './pages/HomeUsuario';
-import { AuthProvider } from './context/AuthContext'; // ✅ importamos el contexto
+import { AuthProvider } from './context/AuthContext';
+import AdminHome from './components/AdminHome';
 
 const App = () => (
   <AuthProvider> {/* ✅ envolvemos toda la app */}
@@ -13,11 +14,10 @@ const App = () => (
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/registro" element={<Registro />} />
-        <Route path="/futbol" element={<Futbol />} /> {/* Página de Fútbol */}
-        <Route path="/basquet" element={<Basquet />} /> {/* Página de Básquet */}
-        <Route path="/usuario" element={<HomeUsuario />} /> {/* Página de Básquet */}
-
-
+        <Route path="/futbol" element={<Futbol />} />
+        <Route path="/basquet" element={<Basquet />} />
+        <Route path="/usuario" element={<HomeUsuario />} />
+        <Route path="/admin" element={<AdminHome />} />
       </Routes>
     </BrowserRouter>
   </AuthProvider>

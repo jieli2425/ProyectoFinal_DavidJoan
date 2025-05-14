@@ -23,9 +23,13 @@ const LoginPopup = ({ onClose }) => {
 
     const data = await res.json();
     if (data.token) {
-      login(data.token, data.nombre); // guardamos estado global
-      onClose(true); // cerrar popup
-      navigate('/usuario'); // redirigir a vista protegida
+      login(data.token, data.nombre);
+      onClose(true);
+      if (data.role === 'admin') {
+      navigate('/admin');
+    } else {
+      navigate('/usuario');
+    }
     } else {
       alert(data.msg || data.message);
     }
