@@ -1,9 +1,3 @@
-body {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
 .navbar {
   display: flex;
   justify-content: space-between;
@@ -25,7 +19,7 @@ body {
   gap: 1rem;
   justify-content: flex-end;
   flex-wrap: nowrap;
-  margin-right: 3.5rem; /* <-- Añade este margen */
+  margin-right: 3.5rem;
 }
 
 .navbar-center {
@@ -40,6 +34,14 @@ body {
   justify-content: flex-end;
   flex-shrink: 0;
   gap: 0.5rem;
+  display: flex; /* Esto es para alinear la moneda y el botón */
+  align-items: center; /* Centrado en el eje Y */
+}
+
+.navbar-logged-in {
+  display: flex;
+  align-items: center; /* Centrado en el eje Y */
+  gap: 10px; /* Espacio entre el icono y el botón */
 }
 
 .navbar-btn {
@@ -54,10 +56,9 @@ body {
 }
 
 .custom-btn {
-  color: #1D3F5B; /* tu color personalizado */
+  color: #1D3F5B;
   font-weight: 600;
 }
-
 
 .navbar-btn:hover {
   background-color: #e0e0e0;
@@ -80,4 +81,10 @@ body {
   height: 40px;
   object-fit: contain;
   cursor: pointer;
+}
+
+/* Estilos para el icono de las monedas */
+.navbar-logged-in img {
+  width: 24px; /* Tamaño del icono */
+  margin-right: 8px; /* Espacio entre la imagen y el texto */
 }

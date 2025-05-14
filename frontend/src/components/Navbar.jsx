@@ -3,10 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import '../../css/navbar.css';
 import logoJOLIblanco from '../assets/LogoJOLIBlanco.png';
 import { AuthContext } from '../context/AuthContext';
+import MonedaIcon from '../assets/monedaoronav.png'; // Asegúrate de tener el icono de la moneda
 
 const Navbar = ({ onLoginClick, onRegisterClick }) => {
   const navigate = useNavigate();
-  const { isAuthenticated, registrado, logout } = useContext(AuthContext);
+  const { isAuthenticated, registrado, logout, monedas } = useContext(AuthContext);
 
   const handleLogoClick = () => {
     navigate('/');
@@ -42,7 +43,13 @@ const Navbar = ({ onLoginClick, onRegisterClick }) => {
             )}
           </>
         ) : (
-          <button className="btn btn-light custom-btn" onClick={handleLogout}>Cerrar sesión</button>
+          <>
+            <div className="monedas-info" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <img src={MonedaIcon} alt="Moneda" style={{ width: '20px', height: '20px' }} />
+              <span>{monedas}</span> {/* Mostrar las monedas */}
+            </div>
+            <button className="btn btn-light custom-btn" onClick={handleLogout}>Cerrar sesión</button>
+          </>
         )}
       </div>
     </nav>
