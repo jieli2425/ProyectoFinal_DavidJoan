@@ -48,19 +48,31 @@ const loginUsuario = async (req, res) => {
       return res.status(400).json({ message: 'Contraseña incorrecta' });
     }
 
+    console.log('Usuario encontrado:', {
+      id: usuario._id,
+      nombre: usuario.nombre,
+      isAdmin: usuario.isAdmin
+    });
+
     const token = jwt.sign(
-      { userId: usuario._id, role: usuario.role },
+      { 
+        userId: usuario._id,
+        nombre: usuario.nombre,
+        isAdmin: usuario.isAdmin 
+      },
       process.env.JWT_SECRET,
-      { expiresIn: '1h' }
+      { expiresIn: '2h' }
     );
 
     return res.status(200).json({
       token,
       nombre: usuario.nombre,
-      isAdmin: usuario.isAdmin
+      isAdmin: usuario.isAdmin,
+      userId: usuario._id,
+      monedas: usuario.monedas
     });
   } catch (error) {
-    console.error(error);
+    console.error('Error en loginUsuario:', error);
     return res.status(500).json({ message: 'Error al iniciar sesión' });
   }
 };
@@ -68,9 +80,16 @@ const loginUsuario = async (req, res) => {
 const verificarToken = async (req, res) => {
   try {
     const { token } = req.body;
-    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-      if (err) return res.status(403).json({ message: 'Token inválido' });
-      return res.status(200).json({ userId: decoded.userId, role: decoded.role });
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const usuario = await Usuario.findById(decoded.userId);
+    
+    if (!usuario) {
+      return res.status(404).json({ message: 'Usuario no encontrado' });
+    }
+    
+    return res.status(200).json({ 
+      userId: decoded.userId, 
+      isAdmin: usuario.isAdmin 
     });
   } catch (error) {
     console.error(error);
