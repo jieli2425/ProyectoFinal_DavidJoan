@@ -19,6 +19,10 @@ const Navbar = ({ onLoginClick, onRegisterClick }) => {
     navigate('/');
   };
 
+  const handlePuntosTienda = () => {
+    navigate('/puntosTienda');
+  };
+
   // Estado y referencias para buscador
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
@@ -56,21 +60,20 @@ const Navbar = ({ onLoginClick, onRegisterClick }) => {
   };
 
   const handleSelect = (item) => {
-    // Aquí puedes decidir a dónde navegar según lo que selecciones
-    // Por ejemplo, a la página del partido o de la competición
     setQuery(item.competicion || `${item.equipoLocal} vs ${item.equipoVisitante}`);
     setShowResults(false);
-
-    // Ejemplo de navegación a detalle partido si tienes ruta
     if (item._id) {
       navigate(`/partido/${item._id}`);
     }
   };
 
   const handleBlur = () => {
-    // Delay para que el click en resultado funcione antes de cerrar
     setTimeout(() => setShowResults(false), 150);
   };
+
+  // Menú desplegable
+  const [menuOpen, setMenuOpen] = useState(false);
+  const toggleMenu = () => setMenuOpen(!menuOpen);
 
   return (
     <nav className="navbar">
@@ -86,7 +89,6 @@ const Navbar = ({ onLoginClick, onRegisterClick }) => {
       </div>
 
       <div className="navbar-right">
-        {/* Buscador a la derecha */}
         <div className="search-bar" style={{ position: 'relative' }}>
           <Search size={20} className="search-icon" />
           <input
@@ -121,7 +123,7 @@ const Navbar = ({ onLoginClick, onRegisterClick }) => {
                   key={item._id}
                   onClick={() => handleSelect(item)}
                   style={{ padding: '6px 8px', cursor: 'pointer' }}
-                  onMouseDown={(e) => e.preventDefault()} // evitar perder foco al click
+                  onMouseDown={(e) => e.preventDefault()}
                 >
                   {item.competicion ? item.competicion : `${item.equipoLocal} vs ${item.equipoVisitante}`}
                 </li>
@@ -143,7 +145,28 @@ const Navbar = ({ onLoginClick, onRegisterClick }) => {
               <img src={MonedaIcon} alt="Moneda" style={{ width: '20px', height: '20px' }} />
               <span>{monedas}</span>
             </div>
-            <button className="btn btn-light custom-btn" onClick={handleLogout}>Cerrar sesión</button>
+
+            {/* Icono de usuario/menu */}
+            <div className="user-menu">
+              <button
+                className="btn btn-light custom-btn"
+                onClick={toggleMenu}
+                style={{ fontSize: '1.2rem', padding: '4px 10px' }}
+              >
+                ☰
+              </button>
+              {menuOpen && (
+                <ul className="menu-dropdown">
+                  <li className="menu-item" onClick={() => { handlePuntosTienda(); setMenuOpen(false); }}>
+                    Tienda de puntos
+                  </li>
+                  <li className="menu-item logout" onClick={() => { handleLogout(); setMenuOpen(false); }}>
+                    Cerrar sesión
+                  </li>
+                </ul>
+              )}
+            </div>
+
           </>
         )}
       </div>
