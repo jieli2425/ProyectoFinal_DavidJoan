@@ -1,24 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const auth = require('../middleware/auth');
+const { verificarToken, verificarAdmin } = require('../middlewares/auth');
 const Usuario = require('../models/Usuario');
 const Apuesta = require('../models/Apuesta');
 
-// Middleware para verificar si es admin
-const isAdmin = async (req, res, next) => {
-  try {
-    const usuario = await Usuario.findById(req.user.userId);
-    if (!usuario || !usuario.isAdmin) {
-      return res.status(403).json({ message: 'Acceso denegado - Se requieren permisos de administrador' });
-    }
-    next();
-  } catch (error) {
-    res.status(500).json({ message: 'Error al verificar permisos de administrador' });
-  }
-};
-
 // Obtener todos los usuarios
-router.get('/usuarios', auth, isAdmin, async (req, res) => {
+router.get('/usuarios', verificarToken, verificarAdmin, async (req, res) => {
   try {
     const usuarios = await Usuario.find().select('-password');
     res.json(usuarios);
@@ -29,7 +16,7 @@ router.get('/usuarios', auth, isAdmin, async (req, res) => {
 });
 
 // Obtener todas las apuestas
-router.get('/apuestas', auth, isAdmin, async (req, res) => {
+router.get('/apuestas', verificarToken, verificarAdmin, async (req, res) => {
   try {
     const apuestas = await Apuesta.find()
       .populate('usuario', 'nombre email')
@@ -53,7 +40,7 @@ router.get('/apuestas', auth, isAdmin, async (req, res) => {
 });
 
 // Modificar monedas de un usuario
-router.put('/usuarios/:userId/monedas', auth, isAdmin, async (req, res) => {
+router.put('/usuarios/:userId/monedas', verificarToken, verificarAdmin, async (req, res) => {
   try {
     const { monedas } = req.body;
     const usuario = await Usuario.findByIdAndUpdate(
@@ -74,7 +61,7 @@ router.put('/usuarios/:userId/monedas', auth, isAdmin, async (req, res) => {
 });
 
 // Eliminar una apuesta
-router.delete('/apuestas/:apuestaId', auth, isAdmin, async (req, res) => {
+router.delete('/apuestas/:apuestaId', verificarToken, verificarAdmin, async (req, res) => {
   try {
     const apuesta = await Apuesta.findByIdAndDelete(req.params.apuestaId);
     if (!apuesta) {
