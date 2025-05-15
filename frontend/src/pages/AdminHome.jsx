@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Navbar from './Navbar';
-import Footer from './Footer';
+import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
+import { useAuth } from '../context/AuthContext';
 
 const API_URL = 'http://localhost:5000';
 
@@ -9,6 +10,7 @@ const AdminHome = () => {
   const navigate = useNavigate();
   const [usuarios, setUsuarios] = useState([]);
   const [apuestas, setApuestas] = useState([]);
+  const { isAdmin } = useAuth();
   const [token] = useState(localStorage.getItem('token'));
 
   useEffect(() => {
@@ -34,7 +36,8 @@ const AdminHome = () => {
       }
     };
 
-    if (!token) {
+    // Verificar si hay token y si es admin
+    if (!token || !isAdmin) {
       navigate('/');
       return;
     }
@@ -42,7 +45,7 @@ const AdminHome = () => {
     verificarAdmin();
     cargarUsuarios();
     cargarApuestas();
-  }, [navigate, token]);
+  }, [navigate, token, isAdmin]);
 
   const cargarUsuarios = async () => {
     try {
@@ -160,7 +163,6 @@ const AdminHome = () => {
           </div>
         </div>
 
-        {/* GESTIÓN DE APUESTAS */}
         <div className="bg-white rounded-lg shadow-md p-6">
           <h2 className="text-2xl font-semibold mb-4 text-[#1D3F5B]">Apuestas</h2>
           <div className="overflow-x-auto">
@@ -194,4 +196,4 @@ const AdminHome = () => {
   );
 };
 
-export default AdminHome;
+export default AdminHome; 

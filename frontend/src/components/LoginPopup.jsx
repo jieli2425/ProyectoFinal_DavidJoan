@@ -26,13 +26,17 @@ const LoginPopup = ({ onClose }) => {
 
       const data = await res.json();
       if (data.token) {
-        login(data.token, data.nombre, data.isAdmin);
-        if (data.isAdmin) {
-          navigate('/admin');
-        } else {
-          navigate('/usuario');
-        }
+        await login(data.token, data.nombre, data.isAdmin);
         onClose(true);
+        console.log('isAdmin:', data.isAdmin);
+        
+        setTimeout(() => {
+          if (data.isAdmin) {
+            navigate('/admin');
+          } else {
+            navigate('/usuario');
+          }
+        }, 100);
       } else {
         alert(data.msg || data.message);
       }

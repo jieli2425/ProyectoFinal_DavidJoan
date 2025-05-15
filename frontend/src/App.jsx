@@ -6,7 +6,7 @@ import Futbol from './pages/Futbol';
 import Basquet from './pages/Basquet';
 import HomeUsuario from './pages/HomeUsuario';
 import { AuthProvider } from './context/AuthContext';
-import AdminHome from './components/AdminHome';
+import AdminHome from './pages/AdminHome';
 
 const App = () => (
   <AuthProvider>
