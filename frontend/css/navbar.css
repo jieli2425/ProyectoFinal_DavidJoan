@@ -13,29 +13,24 @@
   z-index: 1000;
 }
 
-.navbar-left,
-.navbar-right {
+.navbar-left {
   display: flex;
-  gap: 1rem;
-  justify-content: flex-end;
-  flex-wrap: nowrap;
-  margin-right: 3.5rem;
+  align-items: center;
+  gap: 1.5rem;
 }
 
 .navbar-center {
-  flex: 1;
   display: flex;
-  justify-content: center;
-  gap: 1rem;
-  align-items: center;
+  justify-content: flex-start;
+  flex: 1;
 }
 
 .navbar-right {
+  display: flex;
+  align-items: center;
   justify-content: flex-end;
-  flex-shrink: 0;
   gap: 0.5rem;
-  display: flex; /* Esto es para alinear la moneda y el botón */
-  align-items: center; /* Centrado en el eje Y */
+  flex-shrink: 0;
 }
 
 .navbar-logged-in {
@@ -88,3 +83,31 @@
   width: 24px; /* Tamaño del icono */
   margin-right: 8px; /* Espacio entre la imagen y el texto */
 }
+.search-bar {
+  display: flex;
+  align-items: center;
+  background-color: white;
+  padding: 4px 8px;
+  border-radius: 20px;
+  margin-right: 1rem;
+  height: 35px;
+  border: 1px solid #ccc;
+}
+
+.search-input {
+  border: none;
+  outline: none;
+  margin-left: 6px;
+  font-size: 14px;
+}
+
+.search-icon {
+  color: gray;
+}
+
+.large-link {
+  font-size: 18px;
+  font-weight: 500;
+  margin: 0 12px;
+}
+
