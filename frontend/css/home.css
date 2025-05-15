@@ -49,7 +49,7 @@ body {
 .liga-img {
   width: 80px;
   height: 80px;
-  border-radius: 50%;
+  border-radius: 0;
   object-fit: cover;
   margin-bottom: 0.5rem;
 }
