@@ -1,6 +1,6 @@
-const Apuesta = require('../model/Apuesta');
-const Partido = require('../model/Partido');
-const Usuario = require('../model/Usuario');
+const Apuesta = require('../models/Apuesta');
+const Partido = require('../models/Partido');
+const Usuario = require('../models/Usuario');
 
 
 const registrarApuesta = async (req, res) => {

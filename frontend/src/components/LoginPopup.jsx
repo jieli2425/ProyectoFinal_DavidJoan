@@ -9,11 +9,14 @@ const API_URL = 'http://localhost:5000';
 const LoginPopup = ({ onClose }) => {
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setError('');
+
     try {
       const res = await fetch(`${API_URL}/api/auth/login`, {
         method: 'POST',
@@ -29,7 +32,7 @@ const LoginPopup = ({ onClose }) => {
       if (!res.ok) {
         throw new Error(data.msg || 'Error al iniciar sesión');
       }
-      
+
       if (data.token) {
         console.log('Login exitoso:', {
           nombre: data.nombre,
@@ -37,16 +40,24 @@ const LoginPopup = ({ onClose }) => {
           token: data.token
         });
 
-        await login(data.token, data.nombre, data.isAdmin);
+        // Primero cerramos el popup
         onClose(true);
-        
-        // Redirigir basado en el rol
-        const path = data.isAdmin ? '/admin' : '/usuario';
-        navigate(path, { replace: true });
+
+        // Luego hacemos login
+        await login(data.token, data.nombre, data.isAdmin);
+
+        // Finalmente redirigimos
+        if (data.isAdmin) {
+          console.log('Redirigiendo a panel de administración...');
+          navigate('/admin');
+        } else {
+          console.log('Redirigiendo a panel de usuario...');
+          navigate('/usuario');
+        }
       }
     } catch (error) {
       console.error('Error durante el login:', error);
-      alert(error.message || 'Error al intentar iniciar sesión');
+      setError(error.message || 'Error al intentar iniciar sesión');
     }
   };
 
