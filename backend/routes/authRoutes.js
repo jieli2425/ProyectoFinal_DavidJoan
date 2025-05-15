@@ -53,18 +53,23 @@ router.post('/register', async (req, res) => {
 
 
 router.post('/login', async (req, res) => {
-  const { email, username, password } = req.body;
-
   try {
+    const { email, username, password } = req.body;
+    
+    // Buscar usuario por email o username
     const identifier = email || username;
     const isEmail = identifier.includes('@');
-
+    
     const user = await Usuario.findOne(isEmail ? { email: identifier } : { username: identifier });
-
-    if (!user) return res.status(400).json({ msg: 'Usuario no encontrado' });
+    
+    if (!user) {
+      return res.status(400).json({ msg: 'Usuario no encontrado' });
+    }
 
     const valid = await bcrypt.compare(password, user.password);
-    if (!valid) return res.status(400).json({ msg: 'Contraseña incorrecta' });
+    if (!valid) {
+      return res.status(400).json({ msg: 'Contraseña incorrecta' });
+    }
 
     const token = jwt.sign(
       { userId: user._id, isAdmin: user.isAdmin },
@@ -75,11 +80,14 @@ router.post('/login', async (req, res) => {
     res.json({ 
       token,
       nombre: user.nombre,
-      isAdmin: user.isAdmin 
+      isAdmin: user.isAdmin,
+      email: user.email,
+      username: user.username,
+      monedas: user.monedas
     });
 
   } catch (err) {
-    console.error(err);
+    console.error('Error en login:', err);
     res.status(500).json({ msg: 'Error en el servidor' });
   }
 });
@@ -101,10 +109,13 @@ router.post('/verificar', async (req, res) => {
 
     res.json({ 
       isAdmin: user.isAdmin,
-      userId: user._id
+      userId: user._id,
+      nombre: user.nombre,
+      email: user.email,
+      monedas: user.monedas
     });
   } catch (err) {
-    console.error(err);
+    console.error('Error en verificación:', err);
     res.status(401).json({ msg: 'Token inválido' });
   }
 });

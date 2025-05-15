@@ -7,7 +7,7 @@ export const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [nombre, setNombre] = useState('');
-  const [monedas, setMonedas] = useState(0); // Añadir el estado para las monedas
+  const [monedas, setMonedas] = useState(0);
   const [registrado, setRegistrado] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
 
@@ -15,33 +15,44 @@ export const AuthProvider = ({ children }) => {
     const token = localStorage.getItem('token');
     const nombreGuardado = localStorage.getItem('nombre');
     const registradoGuardado = localStorage.getItem('registrado') === 'true';
-    const isAdminGuardado = localStorage.getItem('isAdmin') === 'true';
 
     if (token) {
-      setIsAuthenticated(true);
-      if (nombreGuardado) setNombre(nombreGuardado);
-      if (isAdminGuardado) setIsAdmin(true);
-
-      // Realizar la consulta al backend para obtener las monedas del usuario
-      fetch(`${API_URL}/api/usuarios/perfil`, {
-        method: 'GET',
+      // Verificar el token con el backend
+      fetch(`${API_URL}/api/auth/verificar`, {
+        method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ token })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.isAdmin !== undefined) {
+          setIsAuthenticated(true);
+          setNombre(nombreGuardado);
+          setIsAdmin(data.isAdmin);
+          
+          // Obtener las monedas del usuario
+          return fetch(`${API_URL}/api/usuarios/perfil`, {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          });
+        } else {
+          throw new Error('Datos de usuario inválidos');
         }
       })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Error en la respuesta del servidor');
-        }
-        return response.json();
-      })
+      .then(response => response.json())
       .then(data => {
         if (data.monedas) {
           setMonedas(data.monedas);
         }
       })
-      .catch(error => console.error('Error obteniendo el perfil:', error));
+      .catch(error => {
+        console.error('Error en la verificación:', error);
+        logout(); // Si hay error, hacer logout
+      });
     }
 
     setRegistrado(registradoGuardado);

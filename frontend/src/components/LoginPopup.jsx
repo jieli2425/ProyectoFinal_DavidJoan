@@ -12,7 +12,8 @@ const LoginPopup = ({ onClose }) => {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleLogin = async () => {
+  const handleLogin = async (e) => {
+    e.preventDefault();
     try {
       const res = await fetch(`${API_URL}/api/auth/login`, {
         method: 'POST',
@@ -25,24 +26,27 @@ const LoginPopup = ({ onClose }) => {
       });
 
       const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.msg || 'Error al iniciar sesión');
+      }
+      
       if (data.token) {
+        console.log('Login exitoso:', {
+          nombre: data.nombre,
+          isAdmin: data.isAdmin,
+          token: data.token
+        });
+
         await login(data.token, data.nombre, data.isAdmin);
         onClose(true);
-        console.log('isAdmin:', data.isAdmin);
         
-        setTimeout(() => {
-          if (data.isAdmin) {
-            navigate('/admin');
-          } else {
-            navigate('/usuario');
-          }
-        }, 100);
-      } else {
-        alert(data.msg || data.message);
+        // Redirigir basado en el rol
+        const path = data.isAdmin ? '/admin' : '/usuario';
+        navigate(path, { replace: true });
       }
     } catch (error) {
       console.error('Error durante el login:', error);
-      alert('Error al intentar iniciar sesión');
+      alert(error.message || 'Error al intentar iniciar sesión');
     }
   };
 
