@@ -6,7 +6,7 @@ import Futbol from './pages/Futbol';
 import Basquet from './pages/Basquet';
 import HomeUsuario from './pages/HomeUsuario';
 import { AuthProvider } from './context/AuthContext';
-import AdminHome from './components/AdminHome';
+import AdminHome from './pages/AdminHome';
 import ProtectedAdminRoute from './components/ProtectedAdminRoute';
 
 const App = () => (
@@ -18,7 +18,7 @@ const App = () => (
         <Route path="/futbol" element={<Futbol />} />
         <Route path="/basquet" element={<Basquet />} />
         <Route path="/usuario" element={<HomeUsuario />} />
-        <Route path="/admin" element={<ProtectedAdminRoute><AdminHome /></ProtectedAdminRoute>} />
+        <Route path="/admin" element={<AdminHome />} />
       </Routes>
     </BrowserRouter>
   </AuthProvider>
