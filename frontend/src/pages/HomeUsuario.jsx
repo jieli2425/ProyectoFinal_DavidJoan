@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import LoginPopup from '../components/LoginPopup';
+import ApuestaPopup from '../components/ApuestaPopup'; // Popup apostar
 import '../../css/home.css';
 import banderaEspaña from '../assets/banderaespaña.png';
 import banderaInglaterra from '../assets/banderainglaterra.png';
@@ -15,10 +15,11 @@ import futbolicono from '../assets/logofutbol.png';
 import basketicono from '../assets/logobasket.png';
 
 const HomeUsuario = () => {
-  const [loginOpen, setLoginOpen] = useState(false);
+  const [apuestaOpen, setApuestaOpen] = useState(false);
   const [partidos, setPartidos] = useState([]);
   const [partidosPremierLeague, setPartidosPremierLeague] = useState([]);
   const [partidosChampionsLeague, setPartidosChampionsLeague] = useState([]);
+  const [partidoSeleccionado, setPartidoSeleccionado] = useState(null);
 
   useEffect(() => {
     fetch('/api/partidos')
@@ -41,14 +42,24 @@ const HomeUsuario = () => {
     document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const handleApostarClick = () => {
-    setLoginOpen(true); // abrir popup al hacer clic en "Apostar"
+  const handleApostarClick = (partido) => {
+    setPartidoSeleccionado(partido);
+    setApuestaOpen(true);
   };
 
   return (
     <div>
-      <Navbar onLoginClick={() => setLoginOpen(true)} onRegisterClick={() => window.location.href = '/registro'} />
-      {loginOpen && <LoginPopup onClose={() => setLoginOpen(false)} />}
+      <Navbar onRegisterClick={() => window.location.href = '/registro'} />
+
+      {apuestaOpen && (
+        <ApuestaPopup
+          partido={partidoSeleccionado}
+          onClose={() => {
+            setApuestaOpen(false);
+            setPartidoSeleccionado(null);
+          }}
+        />
+      )}
 
       <div className="home-content">
         <div className="ligas-grid">
@@ -82,8 +93,18 @@ const HomeUsuario = () => {
           {partidosFutbol.map(p => (
             <div key={p._id} className="partido-card">
               <span className="partido-equipos">{p.equipoLocal} vs {p.equipoVisitante}</span>
-              <input type="text" className="hora-input" value={new Date(p.fecha).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} readOnly />
-              <button className="btn btn-light btn-sm apostar-btn" onClick={handleApostarClick}>Apostar</button>
+              <input
+                type="text"
+                className="hora-input"
+                value={new Date(p.fecha).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                readOnly
+              />
+              <button
+                className="btn btn-light btn-sm apostar-btn"
+                onClick={() => handleApostarClick(p)}
+              >
+                Apostar
+              </button>
             </div>
           ))}
         </div>
@@ -96,8 +117,18 @@ const HomeUsuario = () => {
           {partidosPremierLeague.map(p => (
             <div key={p._id} className="partido-card">
               <span className="partido-equipos">{p.equipoLocal} vs {p.equipoVisitante}</span>
-              <input type="text" className="hora-input" value={new Date(p.fecha).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} readOnly />
-              <button className="btn btn-light btn-sm apostar-btn" onClick={handleApostarClick}>Apostar</button>
+              <input
+                type="text"
+                className="hora-input"
+                value={new Date(p.fecha).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                readOnly
+              />
+              <button
+                className="btn btn-light btn-sm apostar-btn"
+                onClick={() => handleApostarClick(p)}
+              >
+                Apostar
+              </button>
             </div>
           ))}
         </div>
@@ -110,8 +141,18 @@ const HomeUsuario = () => {
           {partidosChampionsLeague.map(p => (
             <div key={p._id} className="partido-card">
               <span className="partido-equipos">{p.equipoLocal} vs {p.equipoVisitante}</span>
-              <input type="text" className="hora-input" value={new Date(p.fecha).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} readOnly />
-              <button className="btn btn-light btn-sm apostar-btn" onClick={handleApostarClick}>Apostar</button>
+              <input
+                type="text"
+                className="hora-input"
+                value={new Date(p.fecha).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                readOnly
+              />
+              <button
+                className="btn btn-light btn-sm apostar-btn"
+                onClick={() => handleApostarClick(p)}
+              >
+                Apostar
+              </button>
             </div>
           ))}
         </div>
@@ -136,7 +177,9 @@ const HomeUsuario = () => {
                   <td>{p.equipoLocal}</td>
                   <td>{p.equipoVisitante}</td>
                   <td>{new Date(p.fecha).toLocaleString()}</td>
-                  <td><button onClick={handleApostarClick}>Apostar</button></td>
+                  <td>
+                    <button onClick={() => handleApostarClick(p)}>Apostar</button>
+                  </td>
                 </tr>
               ))}
             </tbody>
