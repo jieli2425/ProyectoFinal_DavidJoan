@@ -16,7 +16,7 @@ const AdminHome = () => {
       });
 
       const data = await res.json();
-      if (data.role !== 'admin') {
+      if (!data.isAdmin) {
         alert('Acceso denegado');
         navigate('/');
       }

@@ -25,11 +25,11 @@ const LoginPopup = ({ onClose }) => {
     if (data.token) {
       login(data.token, data.nombre);
       onClose(true);
-      if (data.role === 'admin') {
-      navigate('/admin');
-    } else {
-      navigate('/usuario');
-    }
+      if (data.isAdmin) {
+        navigate('/admin');
+      } else {
+        navigate('/usuario');
+      }
     } else {
       alert(data.msg || data.message);
     }
