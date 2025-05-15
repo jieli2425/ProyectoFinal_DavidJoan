@@ -2,12 +2,13 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const path = require('path');
 
-
-const authRoutes = require('./routes/authroutes');
+const authRoutes = require('./routes/authRoutes');
 const apuestasRoutes = require('./routes/apuestasRoutes');
 const partidosRoutes = require('./routes/partidosRoutes');
 const usuariosRoutes = require('./routes/usuariosRoutes');
+const adminRoutes = require('./routes/adminRoutes');
 const footballDataServices = require('./services/footballDataServices');
 
 dotenv.config();
@@ -25,6 +26,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/apuestas', apuestasRoutes);
 app.use('/api/partidos', partidosRoutes);
 app.use('/api/usuarios', usuariosRoutes);
+app.use('/api/admin', adminRoutes);
 
 // setInterval(() => {
 //   footballDataServices.obtenerPartidosEnVivo();

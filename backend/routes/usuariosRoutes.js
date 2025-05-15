@@ -60,4 +60,24 @@ router.delete('/:id', auth, admin, async (req, res) => {
   }
 });
 
+// Nuevo endpoint para hacer admin a un usuario
+router.patch('/:id/make-admin', auth, admin, async (req, res) => {
+  try {
+    const usuario = await Usuario.findByIdAndUpdate(
+      req.params.id,
+      { isAdmin: true },
+      { new: true }
+    ).select('-password');
+    
+    if (!usuario) {
+      return res.status(404).json({ msg: 'Usuario no encontrado' });
+    }
+    
+    res.json({ msg: 'Usuario actualizado a administrador', usuario });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ msg: 'Error al actualizar usuario' });
+  }
+});
+
 module.exports = router;

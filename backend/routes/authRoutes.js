@@ -72,11 +72,40 @@ router.post('/login', async (req, res) => {
       { expiresIn: '2h' }
     );
 
-    res.json({ token });
+    res.json({ 
+      token,
+      nombre: user.nombre,
+      isAdmin: user.isAdmin 
+    });
 
   } catch (err) {
     console.error(err);
     res.status(500).json({ msg: 'Error en el servidor' });
+  }
+});
+
+router.post('/verificar', async (req, res) => {
+  const { token } = req.body;
+  
+  if (!token) {
+    return res.status(400).json({ msg: 'Token no proporcionado' });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await Usuario.findById(decoded.userId);
+    
+    if (!user) {
+      return res.status(404).json({ msg: 'Usuario no encontrado' });
+    }
+
+    res.json({ 
+      isAdmin: user.isAdmin,
+      userId: user._id
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(401).json({ msg: 'Token inválido' });
   }
 });
 

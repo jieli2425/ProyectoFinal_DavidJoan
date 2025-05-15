@@ -9,7 +9,7 @@ import { AuthProvider } from './context/AuthContext';
 import AdminHome from './components/AdminHome';
 
 const App = () => (
-  <AuthProvider> {/* ✅ envolvemos toda la app */}
+  <AuthProvider>
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Home />} />

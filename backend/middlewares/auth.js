@@ -12,7 +12,7 @@ function verificarAdmin(req, res, next) {
       return res.status(403).json({ message: 'Token inválido o expirado' });
     }
 
-    if (decoded.role !== 'admin') {
+    if (!decoded.isAdmin) {
       return res.status(403).json({ message: 'Acceso denegado. Se requiere rol de administrador' });
     }
 

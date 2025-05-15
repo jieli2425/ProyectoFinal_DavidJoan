@@ -4,34 +4,41 @@ import logoJOLIazul from '../assets/LogoJOLIAzul.png';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
+const API_URL = 'http://localhost:5000';
+
 const LoginPopup = ({ onClose }) => {
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
-  const { login } = useAuth(); // usar contexto
-  const navigate = useNavigate(); // para redireccionar
+  const { login } = useAuth();
+  const navigate = useNavigate();
 
   const handleLogin = async () => {
-    const res = await fetch('/api/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        email: identifier.includes('@') ? identifier : undefined,
-        username: identifier.includes('@') ? undefined : identifier,
-        password
-      })
-    });
+    try {
+      const res = await fetch(`${API_URL}/api/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: identifier.includes('@') ? identifier : undefined,
+          username: identifier.includes('@') ? undefined : identifier,
+          password
+        })
+      });
 
-    const data = await res.json();
-    if (data.token) {
-      login(data.token, data.nombre);
-      onClose(true);
-      if (data.isAdmin) {
-        navigate('/admin');
+      const data = await res.json();
+      if (data.token) {
+        login(data.token, data.nombre, data.isAdmin);
+        if (data.isAdmin) {
+          navigate('/admin');
+        } else {
+          navigate('/usuario');
+        }
+        onClose(true);
       } else {
-        navigate('/usuario');
+        alert(data.msg || data.message);
       }
-    } else {
-      alert(data.msg || data.message);
+    } catch (error) {
+      console.error('Error durante el login:', error);
+      alert('Error al intentar iniciar sesión');
     }
   };
 
