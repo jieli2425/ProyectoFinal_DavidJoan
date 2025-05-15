@@ -3,14 +3,15 @@ import { useNavigate } from 'react-router-dom';
 import '../../css/navbar.css';
 import logoJOLIblanco from '../assets/LogoJOLIBlanco.png';
 import { AuthContext } from '../context/AuthContext';
-import MonedaIcon from '../assets/monedaoronav.png'; // Asegúrate de tener el icono de la moneda
+import MonedaIcon from '../assets/monedaoronav.png';
 
 const Navbar = ({ onLoginClick, onRegisterClick }) => {
   const navigate = useNavigate();
   const { isAuthenticated, registrado, logout, monedas } = useContext(AuthContext);
 
   const handleLogoClick = () => {
-    navigate('/');
+    // Si está logeado, navegar a la página de usuario
+    navigate(isAuthenticated ? '/usuario' : '/');
   };
 
   const handleLogout = () => {
@@ -30,8 +31,17 @@ const Navbar = ({ onLoginClick, onRegisterClick }) => {
       </div>
 
       <div className="navbar-center">
-        <a href="/futbol" className="navbar-link">Fútbol</a>
-        <a href="/basquet" className="navbar-link">Básquet</a>
+        {isAuthenticated ? (
+          <>
+            <a href="/futbol" className="navbar-link">Fútbol</a>
+            <a href="/basquet" className="navbar-link">Básquet</a>
+          </>
+        ) : (
+          <>
+            <a href="/futbol" className="navbar-link">Fútbol</a>
+            <a href="/basquet" className="navbar-link">Básquet</a>
+          </>
+        )}
       </div>
 
       <div className="navbar-right">
@@ -46,7 +56,7 @@ const Navbar = ({ onLoginClick, onRegisterClick }) => {
           <>
             <div className="monedas-info" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <img src={MonedaIcon} alt="Moneda" style={{ width: '20px', height: '20px' }} />
-              <span>{monedas}</span> {/* Mostrar las monedas */}
+              <span>{monedas}</span>
             </div>
             <button className="btn btn-light custom-btn" onClick={handleLogout}>Cerrar sesión</button>
           </>

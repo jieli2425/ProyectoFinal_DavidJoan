@@ -14,16 +14,11 @@ import NBA from '../assets/nba.png';
 import futbolicono from '../assets/logofutbol.png';
 import basketicono from '../assets/logobasket.png';
 
-
-
-
-
 const HomeUsuario = () => {
   const [loginOpen, setLoginOpen] = useState(false);
   const [partidos, setPartidos] = useState([]);
   const [partidosPremierLeague, setPartidosPremierLeague] = useState([]);
   const [partidosChampionsLeague, setPartidosChampionsLeague] = useState([]);
-
 
   useEffect(() => {
     fetch('/api/partidos')
@@ -31,19 +26,23 @@ const HomeUsuario = () => {
       .then(setPartidos);
 
     fetch('/api/partidos/premier-league')
-    .then(res => res.json())
-    .then(setPartidosPremierLeague);
+      .then(res => res.json())
+      .then(setPartidosPremierLeague);
 
     fetch('/api/partidos/champions-league')
       .then(res => res.json())
       .then(setPartidosChampionsLeague);
-    }, []);
+  }, []);
 
   const partidosFutbol = partidos.filter(p => p.deporte === 'futbol');
   const partidosBasquet = partidos.filter(p => p.deporte === 'basquet');
 
   const scrollToSection = (sectionId) => {
     document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const handleApostarClick = () => {
+    setLoginOpen(true); // abrir popup al hacer clic en "Apostar"
   };
 
   return (
@@ -61,13 +60,11 @@ const HomeUsuario = () => {
           <div className="liga-card" onClick={() => scrollToSection('premier-league')}>
             <img src={banderaInglaterra} alt="Inglaterra" className="liga-img" />
             <img src={futbolicono} alt="Pelota de Futbol" className="liga-icon" />
-
             <h3>Premier League</h3>
           </div>
           <div className="liga-card" onClick={() => scrollToSection('champions-league')}>
             <img src={banderaUE} alt="Champions" className="liga-img" />
             <img src={futbolicono} alt="Pelota de Futbol" className="liga-icon" />
-
             <h3>Champions League</h3>
           </div>
           <div className="liga-card" onClick={() => scrollToSection('nba')}>
@@ -77,57 +74,52 @@ const HomeUsuario = () => {
           </div>
         </div>
 
-        {/* Partidos de cada liga */}
-  
-
         <div id="liga-espanola">
           <h2 style={{ display: 'flex', alignItems: 'center', color: '#1D3F5B' }}>
             Liga EA SPORTS
             <img src={laliga} alt="Logo EA Sports" style={{ height: '24px', marginLeft: '10px' }} />
           </h2>
-
           {partidosFutbol.map(p => (
             <div key={p._id} className="partido-card">
               <span className="partido-equipos">{p.equipoLocal} vs {p.equipoVisitante}</span>
               <input type="text" className="hora-input" value={new Date(p.fecha).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} readOnly />
-              <button className="btn btn-light btn-sm apostar-btn">Apostar</button>
+              <button className="btn btn-light btn-sm apostar-btn" onClick={handleApostarClick}>Apostar</button>
             </div>
           ))}
         </div>
 
-
         <div id="premier-league">
           <h2 style={{ display: 'flex', alignItems: 'center', color: '#1D3F5B' }}>
-          Premier League
-          <img src={premierleague} alt="Logo EA Sports" style={{ height: '24px', marginLeft: '10px' }} />
+            Premier League
+            <img src={premierleague} alt="Logo Premier" style={{ height: '24px', marginLeft: '10px' }} />
           </h2>
           {partidosPremierLeague.map(p => (
             <div key={p._id} className="partido-card">
               <span className="partido-equipos">{p.equipoLocal} vs {p.equipoVisitante}</span>
               <input type="text" className="hora-input" value={new Date(p.fecha).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} readOnly />
-              <button className="btn btn-light btn-sm apostar-btn">Apostar</button>
+              <button className="btn btn-light btn-sm apostar-btn" onClick={handleApostarClick}>Apostar</button>
             </div>
           ))}
         </div>
 
         <div id="champions-league">
           <h2 style={{ display: 'flex', alignItems: 'center', color: '#1D3F5B' }}>
-          Champions League
-          <img src={championsleague} alt="Logo Champions" style={{ height: '24px', marginLeft: '10px' }} />
+            Champions League
+            <img src={championsleague} alt="Logo Champions" style={{ height: '24px', marginLeft: '10px' }} />
           </h2>
           {partidosChampionsLeague.map(p => (
             <div key={p._id} className="partido-card">
               <span className="partido-equipos">{p.equipoLocal} vs {p.equipoVisitante}</span>
               <input type="text" className="hora-input" value={new Date(p.fecha).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} readOnly />
-              <button className="btn btn-light btn-sm apostar-btn">Apostar</button>
+              <button className="btn btn-light btn-sm apostar-btn" onClick={handleApostarClick}>Apostar</button>
             </div>
           ))}
         </div>
 
         <div id="nba">
           <h2 style={{ display: 'flex', alignItems: 'center', color: '#1D3F5B' }}>
-          NBA
-          <img src={NBA} alt="Logo Champions" style={{ height: '24px', marginLeft: '10px' }} />
+            NBA
+            <img src={NBA} alt="Logo NBA" style={{ height: '24px', marginLeft: '10px' }} />
           </h2>
           <table border="1" cellPadding="8">
             <thead>
@@ -144,7 +136,7 @@ const HomeUsuario = () => {
                   <td>{p.equipoLocal}</td>
                   <td>{p.equipoVisitante}</td>
                   <td>{new Date(p.fecha).toLocaleString()}</td>
-                  <td><button>Apostar</button></td>
+                  <td><button onClick={handleApostarClick}>Apostar</button></td>
                 </tr>
               ))}
             </tbody>
@@ -152,7 +144,6 @@ const HomeUsuario = () => {
         </div>
       </div>
 
-      {/* Footer al final */}
       <Footer />
     </div>
   );

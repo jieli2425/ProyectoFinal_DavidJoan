@@ -14,11 +14,22 @@ import futbolicono from '../assets/logofutbol.png';
 const Futbol = () => {
   const [loginOpen, setLoginOpen] = useState(false);
   const [partidos, setPartidos] = useState([]);
+  const [partidosPremierLeague, setPartidosPremierLeague] = useState([]);
+  const [partidosChampionsLeague, setPartidosChampionsLeague] = useState([]);
+
 
   useEffect(() => {
     fetch('/api/partidos')
       .then(res => res.json())
       .then(setPartidos);
+
+    fetch('/api/partidos/premier-league')
+      .then(res => res.json())
+      .then(setPartidosPremierLeague);
+
+    fetch('/api/partidos/champions-league')
+      .then(res => res.json())
+      .then(setPartidosChampionsLeague);
   }, []);
 
   // Solo partidos de fútbol
@@ -74,25 +85,13 @@ const Futbol = () => {
             Premier League
             <img src={premierleague} alt="Logo EA Sports" style={{ height: '24px', marginLeft: '10px' }} />
           </h2>
-          <table border="1" cellPadding="8">
-            <thead>
-              <tr>
-                <th>Equipo Local</th>
-                <th>Equipo Visitante</th>
-                <th>Fecha</th>
-                <th>Apostar</th>
-              </tr>
-            </thead>
-            <tbody>
-              {partidosFutbol.map(p => (
-                <div key={p._id} className="partido-card">
-                  <span className="partido-equipos">{p.equipoLocal} vs {p.equipoVisitante}</span>
-                  <input type="text" className="hora-input" value={new Date(p.fecha).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} readOnly />
-                  <button className="btn btn-light btn-sm apostar-btn">Apostar</button>
-                </div>
-              ))}
-            </tbody>
-          </table>
+          {partidosPremierLeague.map(p => (
+            <div key={p._id} className="partido-card">
+              <span className="partido-equipos">{p.equipoLocal} vs {p.equipoVisitante}</span>
+              <input type="text" className="hora-input" value={new Date(p.fecha).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} readOnly />
+              <button className="btn btn-light btn-sm apostar-btn">Apostar</button>
+            </div>
+          ))}
         </div>
 
         <div id="champions-league">
@@ -100,30 +99,14 @@ const Futbol = () => {
             Champions League
             <img src={championsleague} alt="Logo Champions" style={{ height: '24px', marginLeft: '10px' }} />
           </h2>
-          <table border="1" cellPadding="8">
-            <thead>
-              <tr>
-                <th>Equipo Local</th>
-                <th>Equipo Visitante</th>
-                <th>Fecha</th>
-                <th>Apostar</th>
-              </tr>
-            </thead>
-            <tbody>
-              {partidosFutbol.map(p => (
-                p.competicion === 'Champions League' && (
-                  <tr key={p._id}>
-                    <td>{p.equipoLocal}</td>
-                    <td>{p.equipoVisitante}</td>
-                    <td>{new Date(p.fecha).toLocaleString()}</td>
-                    <td><button>Apostar</button></td>
-                  </tr>
-                )
-              ))}
-            </tbody>
-          </table>
+          {partidosChampionsLeague.map(p => (
+            <div key={p._id} className="partido-card">
+              <span className="partido-equipos">{p.equipoLocal} vs {p.equipoVisitante}</span>
+              <input type="text" className="hora-input" value={new Date(p.fecha).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} readOnly />
+              <button className="btn btn-light btn-sm apostar-btn">Apostar</button>
+            </div>
+          ))}
         </div>
-
       </div>
 
       {/* Footer al final */}
