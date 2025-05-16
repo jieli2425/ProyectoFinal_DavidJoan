@@ -12,10 +12,10 @@ import Politica from './pages/politica';
 import SobreNosotros from './pages/sobrenosotros';
 import Contacto from './pages/contacto';
 import { AuthProvider } from './context/AuthContext';
-import AdminHome from './components/AdminHome';
+// import AdminHome from './components/AdminHome';
 
 
-import ProtectedAdminRoute from './components/ProtectedAdminRoute';
+// import ProtectedAdminRoute from './components/ProtectedAdminRoute';
 
 const App = () => (
   <AuthProvider>
@@ -26,7 +26,7 @@ const App = () => (
         <Route path="/futbol" element={<Futbol />} />
         <Route path="/basquet" element={<Basquet />} />
         <Route path="/usuario" element={<HomeUsuario />} />
-        <Route path="/admin" element={<ProtectedAdminRoute><AdminHome /></ProtectedAdminRoute>} />
+        {/* <Route path="/admin" element={<ProtectedAdminRoute><AdminHome /></ProtectedAdminRoute>} /> */}
         <Route path="/puntosTienda" element={<PuntosTienda />} />
         <Route path="/datosCuenta" element={<DatosCuenta />} />
         <Route path="/terminos" element={<Terminos />} />
