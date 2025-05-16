@@ -63,6 +63,8 @@
 
 .apuesta-btn {
   background-color: #12202B;
+.apuesta-btn {
+  background-color: #12202B;
   color: white;
   padding: 10px;
   border: none;
@@ -70,6 +72,8 @@
   cursor: pointer;
 }
 
+.apuesta-btn:hover {
+  background-color: #1D3F5B;
 .apuesta-btn:hover {
   background-color: #1D3F5B;
 }

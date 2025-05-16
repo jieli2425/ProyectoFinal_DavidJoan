@@ -30,6 +30,9 @@ const ApuestaPopup = ({ partido, onClose, onApostar }) => {
           <button onClick={() => onApostar('local')} className="apuesta-btn">Gana {partido.equipoLocal}</button>
           <button onClick={() => onApostar('empate')} className="apuesta-btn">Empate</button>
           <button onClick={() => onApostar('visitante')} className="apuesta-btn">Gana {partido.equipoVisitante}</button>
+          <button onClick={() => onApostar('local')} className="apuesta-btn">Gana {partido.equipoLocal}</button>
+          <button onClick={() => onApostar('empate')} className="apuesta-btn">Empate</button>
+          <button onClick={() => onApostar('visitante')} className="apuesta-btn">Gana {partido.equipoVisitante}</button>
         </div>
       </div>
     </div>
