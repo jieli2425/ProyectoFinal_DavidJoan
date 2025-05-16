@@ -2,15 +2,10 @@ const mongoose = require('mongoose');
 
 const PartidoSchema = new mongoose.Schema({
   deporte: { type: String, enum: ['futbol', 'basquet'], required: true },
-  competicion: { type: String, ref: 'Competicion' },
-  equipoLocal: {
-    nombre: { type: String, required: true },
-  },
-  equipoVisitante: {
-    nombre: { type: String, required: true },
-  },
+  competicion: { type: String, required: true },
+  equipoLocal: { type: String, required: true },
+  equipoVisitante: { type: String, required: true },
   fecha: { type: Date, required: true },
-  competencia: { type: String, required: true },
   estado: { 
     type: String, 
     enum: ['pendiente', 'en_curso', 'finalizado'], 
