@@ -101,7 +101,8 @@ router.post('/verificar', async (req, res) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await Usuario.findById(decoded.userId);
+    const user = await Usuario.findById(decoded.userId)
+      .select('isAdmin nombre email monedas'); // Seleccionamos solo los campos necesarios
     
     if (!user) {
       return res.status(404).json({ msg: 'Usuario no encontrado' });

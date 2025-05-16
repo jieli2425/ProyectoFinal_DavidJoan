@@ -52,9 +52,9 @@ export const AuthProvider = ({ children }) => {
           console.error('Error en la verificación:', error);
           logout();
         })
-        .finally(() => setLoading(false)); // ✅ Marcamos que terminó la carga
+        .finally(() => setLoading(false));
     } else {
-      setLoading(false); // ✅ No hay token, pero terminamos de cargar
+      setLoading(false);
     }
 
     setRegistrado(registradoGuardado);
@@ -115,7 +115,7 @@ export const AuthProvider = ({ children }) => {
       nombre,
       monedas,
       isAdmin,
-      loading // 👈 Exponemos el estado loading
+      loading
     }}>
       {children}
     </AuthContext.Provider>
