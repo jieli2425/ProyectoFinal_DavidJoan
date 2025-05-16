@@ -1,0 +1,23 @@
+.datos-cuenta-container {
+  margin-top: 100px;
+  margin-bottom: 2rem;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 2rem;
+  background-color: white;
+  max-width: 650px; /* ← Aumentado */
+  width: 100%;
+  border-radius: 20px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+  min-height: 80vh;
+}
+
+.datos-cuenta-container h2 {
+  margin-bottom: 1.5rem;
+}
+
+.datos-info p {
+  font-size: 1.1rem;
+  margin-bottom: 0.8rem;
+  
+}

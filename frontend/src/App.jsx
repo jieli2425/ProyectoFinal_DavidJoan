@@ -5,8 +5,16 @@ import Registro from './pages/Registro';
 import Futbol from './pages/Futbol'; 
 import Basquet from './pages/Basquet';
 import HomeUsuario from './pages/HomeUsuario';
+import PuntosTienda from './pages/puntosTienda';
+import DatosCuenta from './pages/datosCuenta';
+import Terminos from './pages/terminos';
+import Politica from './pages/politica';
+import SobreNosotros from './pages/sobrenosotros';
+import Contacto from './pages/contacto';
 import { AuthProvider } from './context/AuthContext';
 import AdminHome from './components/AdminHome';
+
+
 import ProtectedAdminRoute from './components/ProtectedAdminRoute';
 
 const App = () => (
@@ -19,6 +27,12 @@ const App = () => (
         <Route path="/basquet" element={<Basquet />} />
         <Route path="/usuario" element={<HomeUsuario />} />
         <Route path="/admin" element={<ProtectedAdminRoute><AdminHome /></ProtectedAdminRoute>} />
+        <Route path="/puntosTienda" element={<PuntosTienda />} />
+        <Route path="/datosCuenta" element={<DatosCuenta />} />
+        <Route path="/terminos" element={<Terminos />} />
+        <Route path="/politica" element={<Politica />} />
+        <Route path="/nosotros" element={<SobreNosotros />} />
+        <Route path="/contacto" element={<Contacto />} />
       </Routes>
     </BrowserRouter>
   </AuthProvider>

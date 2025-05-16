@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
-const API_URL = 'http://localhost:5000'; // Añadir URL base del backend
+const API_URL = 'http://localhost:5000';
 
 export const AuthContext = createContext();
 
@@ -10,6 +10,7 @@ export const AuthProvider = ({ children }) => {
   const [monedas, setMonedas] = useState(0);
   const [registrado, setRegistrado] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [loading, setLoading] = useState(true); // 👈 NUEVO estado de carga
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -17,7 +18,6 @@ export const AuthProvider = ({ children }) => {
     const registradoGuardado = localStorage.getItem('registrado') === 'true';
 
     if (token) {
-      // Verificar el token con el backend
       fetch(`${API_URL}/api/auth/verificar`, {
         method: 'POST',
         headers: {
@@ -25,34 +25,36 @@ export const AuthProvider = ({ children }) => {
         },
         body: JSON.stringify({ token })
       })
-      .then(response => response.json())
-      .then(data => {
-        if (data.isAdmin !== undefined) {
-          setIsAuthenticated(true);
-          setNombre(nombreGuardado);
-          setIsAdmin(data.isAdmin);
-          
-          // Obtener las monedas del usuario
-          return fetch(`${API_URL}/api/usuarios/perfil`, {
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json'
-            }
-          });
-        } else {
-          throw new Error('Datos de usuario inválidos');
-        }
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.monedas) {
-          setMonedas(data.monedas);
-        }
-      })
-      .catch(error => {
-        console.error('Error en la verificación:', error);
-        logout(); // Si hay error, hacer logout
-      });
+        .then(response => response.json())
+        .then(data => {
+          if (data.isAdmin !== undefined) {
+            setIsAuthenticated(true);
+            setNombre(nombreGuardado);
+            setIsAdmin(data.isAdmin);
+
+            return fetch(`${API_URL}/api/usuarios/perfil`, {
+              headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+              }
+            });
+          } else {
+            throw new Error('Datos de usuario inválidos');
+          }
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.monedas) {
+            setMonedas(data.monedas);
+          }
+        })
+        .catch(error => {
+          console.error('Error en la verificación:', error);
+          logout();
+        })
+        .finally(() => setLoading(false)); // ✅ Marcamos que terminó la carga
+    } else {
+      setLoading(false); // ✅ No hay token, pero terminamos de cargar
     }
 
     setRegistrado(registradoGuardado);
@@ -66,7 +68,6 @@ export const AuthProvider = ({ children }) => {
     setNombre(nombre);
     setIsAdmin(isAdmin);
 
-    // Realizar la consulta al backend para obtener las monedas del usuario al hacer login
     fetch(`${API_URL}/api/usuarios/perfil`, {
       method: 'GET',
       headers: {
@@ -74,18 +75,18 @@ export const AuthProvider = ({ children }) => {
         'Content-Type': 'application/json'
       }
     })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Error en la respuesta del servidor');
-      }
-      return response.json();
-    })
-    .then(data => {
-      if (data.monedas) {
-        setMonedas(data.monedas);
-      }
-    })
-    .catch(error => console.error('Error obteniendo el perfil:', error));
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Error en la respuesta del servidor');
+        }
+        return response.json();
+      })
+      .then(data => {
+        if (data.monedas) {
+          setMonedas(data.monedas);
+        }
+      })
+      .catch(error => console.error('Error obteniendo el perfil:', error));
   };
 
   const logout = () => {
@@ -94,7 +95,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('isAdmin');
     setIsAuthenticated(false);
     setNombre('');
-    setMonedas(0); // Limpiar las monedas al cerrar sesión
+    setMonedas(0);
     setIsAdmin(false);
   };
 
@@ -105,7 +106,17 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, registrado, login, logout, registro, nombre, monedas, isAdmin }}>
+    <AuthContext.Provider value={{
+      isAuthenticated,
+      registrado,
+      login,
+      logout,
+      registro,
+      nombre,
+      monedas,
+      isAdmin,
+      loading // 👈 Exponemos el estado loading
+    }}>
       {children}
     </AuthContext.Provider>
   );

@@ -4,7 +4,7 @@ import '../../css/navbar.css';
 import logoJOLIblanco from '../assets/LogoJOLIBlanco.png';
 import { AuthContext } from '../context/AuthContext';
 import MonedaIcon from '../assets/monedaoronav.png';
-import { Search } from 'lucide-react';
+import { Search, User } from 'lucide-react';
 
 const Navbar = ({ onLoginClick, onRegisterClick }) => {
   const navigate = useNavigate();
@@ -17,6 +17,10 @@ const Navbar = ({ onLoginClick, onRegisterClick }) => {
   const handleLogout = () => {
     logout();
     navigate('/');
+  };
+
+  const handlePuntosTienda = () => {
+    navigate('/puntosTienda');
   };
 
   // Estado y referencias para buscador
@@ -56,21 +60,20 @@ const Navbar = ({ onLoginClick, onRegisterClick }) => {
   };
 
   const handleSelect = (item) => {
-    // Aquí puedes decidir a dónde navegar según lo que selecciones
-    // Por ejemplo, a la página del partido o de la competición
     setQuery(item.competicion || `${item.equipoLocal} vs ${item.equipoVisitante}`);
     setShowResults(false);
-
-    // Ejemplo de navegación a detalle partido si tienes ruta
     if (item._id) {
       navigate(`/partido/${item._id}`);
     }
   };
 
   const handleBlur = () => {
-    // Delay para que el click en resultado funcione antes de cerrar
     setTimeout(() => setShowResults(false), 150);
   };
+
+  // Menú desplegable usuario
+  const [menuOpen, setMenuOpen] = useState(false);
+  const toggleMenu = () => setMenuOpen(!menuOpen);
 
   return (
     <nav className="navbar">
@@ -83,10 +86,12 @@ const Navbar = ({ onLoginClick, onRegisterClick }) => {
         />
         <a href="/futbol" className="navbar-link large-link">Fútbol</a>
         <a href="/basquet" className="navbar-link large-link">Básquet</a>
+        <a href="/nosotros" className="navbar-link large-link">¿Quiénes somos?</a>
+        <a href="/contacto" className="navbar-link large-link">Contacto</a>
+
       </div>
 
       <div className="navbar-right">
-        {/* Buscador a la derecha */}
         <div className="search-bar" style={{ position: 'relative' }}>
           <Search size={20} className="search-icon" />
           <input
@@ -121,7 +126,7 @@ const Navbar = ({ onLoginClick, onRegisterClick }) => {
                   key={item._id}
                   onClick={() => handleSelect(item)}
                   style={{ padding: '6px 8px', cursor: 'pointer' }}
-                  onMouseDown={(e) => e.preventDefault()} // evitar perder foco al click
+                  onMouseDown={(e) => e.preventDefault()}
                 >
                   {item.competicion ? item.competicion : `${item.equipoLocal} vs ${item.equipoVisitante}`}
                 </li>
@@ -143,7 +148,66 @@ const Navbar = ({ onLoginClick, onRegisterClick }) => {
               <img src={MonedaIcon} alt="Moneda" style={{ width: '20px', height: '20px' }} />
               <span>{monedas}</span>
             </div>
-            <button className="btn btn-light custom-btn" onClick={handleLogout}>Cerrar sesión</button>
+
+            {/* Icono de perfil con menú */}
+            <div className="user-menu" style={{ position: 'relative' }}>
+              <button
+                className="btn btn-light custom-btn"
+                onClick={toggleMenu}
+                style={{ fontSize: '1.4rem', padding: '4px 8px', display: 'flex', alignItems: 'center', gap: '4px' }}
+                aria-haspopup="true"
+                aria-expanded={menuOpen}
+                aria-label="Menú usuario"
+              >
+                <User size={24} />
+              </button>
+
+              {menuOpen && (
+                <ul
+                  className="menu-dropdown"
+                  style={{
+                    position: 'absolute',
+                    top: '110%',
+                    right: 0,
+                    background: 'white',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                    borderRadius: '6px',
+                    padding: '0.5rem 0',
+                    listStyle: 'none',
+                    minWidth: '140px',
+                    zIndex: 1000,
+                  }}
+                >
+                  <li
+                    className="menu-item"
+                    onClick={() => { navigate('/datosCuenta'); setMenuOpen(false); }}
+                    style={{ padding: '0.5rem 1rem', cursor: 'pointer' }}
+                    onKeyDown={(e) => e.key === 'Enter' && (navigate('/datosCuenta'), setMenuOpen(false))}
+                    tabIndex={0}
+                  >
+                    Mi Cuenta
+                  </li>
+                  <li
+                    className="menu-item"
+                    onClick={() => { handlePuntosTienda(); setMenuOpen(false); }}
+                    style={{ padding: '0.5rem 1rem', cursor: 'pointer' }}
+                    onKeyDown={(e) => e.key === 'Enter' && (handlePuntosTienda(), setMenuOpen(false))}
+                    tabIndex={0}
+                  >
+                    Tienda de puntos
+                  </li>
+                  <li
+                    className="menu-item logout"
+                    onClick={() => { handleLogout(); setMenuOpen(false); }}
+                    style={{ padding: '0.5rem 1rem', cursor: 'pointer', color: 'red' }}
+                    onKeyDown={(e) => e.key === 'Enter' && (handleLogout(), setMenuOpen(false))}
+                    tabIndex={0}
+                  >
+                    Cerrar sesión
+                  </li>
+                </ul>
+              )}
+            </div>
           </>
         )}
       </div>
