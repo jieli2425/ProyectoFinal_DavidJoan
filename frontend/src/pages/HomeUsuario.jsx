@@ -78,11 +78,7 @@ const HomeUsuario = () => {
             <img src={futbolicono} alt="Pelota de Futbol" className="liga-icon" />
             <h3>Champions League</h3>
           </div>
-          <div className="liga-card" onClick={() => scrollToSection('nba')}>
-            <img src={banderaEEUU} alt="NBA" className="liga-img" />
-            <img src={basketicono} alt="Pelota de Futbol" className="liga-icon" />
-            <h3>NBA</h3>
-          </div>
+          
         </div>
 
         <div id="liga-espanola">
@@ -157,34 +153,7 @@ const HomeUsuario = () => {
           ))}
         </div>
 
-        <div id="nba">
-          <h2 style={{ display: 'flex', alignItems: 'center', color: '#1D3F5B' }}>
-            NBA
-            <img src={NBA} alt="Logo NBA" style={{ height: '24px', marginLeft: '10px' }} />
-          </h2>
-          <table border="1" cellPadding="8">
-            <thead>
-              <tr>
-                <th>Equipo Local</th>
-                <th>Equipo Visitante</th>
-                <th>Fecha</th>
-                <th>Apostar</th>
-              </tr>
-            </thead>
-            <tbody>
-              {partidosBasquet.map(p => (
-                <tr key={p._id}>
-                  <td>{p.equipoLocal}</td>
-                  <td>{p.equipoVisitante}</td>
-                  <td>{new Date(p.fecha).toLocaleString()}</td>
-                  <td>
-                    <button onClick={() => handleApostarClick(p)}>Apostar</button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        
       </div>
 
       <Footer />

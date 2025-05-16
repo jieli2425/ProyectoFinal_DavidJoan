@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import Registro from './pages/Registro';
 import Futbol from './pages/Futbol'; 
-import Basquet from './pages/Basquet';
+import ResetPassword from './pages/resetpassword';
 import HomeUsuario from './pages/HomeUsuario';
 import PuntosTienda from './pages/puntosTienda';
 import DatosCuenta from './pages/datosCuenta';
@@ -24,7 +24,6 @@ const App = () => (
         <Route path="/" element={<Home />} />
         <Route path="/registro" element={<Registro />} />
         <Route path="/futbol" element={<Futbol />} />
-        <Route path="/basquet" element={<Basquet />} />
         <Route path="/usuario" element={<HomeUsuario />} />
         {/* <Route path="/admin" element={<ProtectedAdminRoute><AdminHome /></ProtectedAdminRoute>} /> */}
         <Route path="/puntosTienda" element={<PuntosTienda />} />
@@ -33,6 +32,8 @@ const App = () => (
         <Route path="/politica" element={<Politica />} />
         <Route path="/nosotros" element={<SobreNosotros />} />
         <Route path="/contacto" element={<Contacto />} />
+        <Route path="/recuperar-contrasena" element={<ResetPassword />} />
+
       </Routes>
     </BrowserRouter>
   </AuthProvider>

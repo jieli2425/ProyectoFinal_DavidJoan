@@ -85,8 +85,6 @@ const Navbar = ({ onLoginClick, onRegisterClick }) => {
           className="logo-img"
           onClick={handleLogoClick}
         />
-        <a href="/futbol" className="navbar-link large-link">Fútbol</a>
-        <a href="/basquet" className="navbar-link large-link">Básquet</a>
         <a href="/nosotros" className="navbar-link large-link">¿Quiénes somos?</a>
         <a href="/contacto" className="navbar-link large-link">Contacto</a>
 
