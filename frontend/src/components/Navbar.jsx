@@ -23,9 +23,6 @@ const Navbar = ({ onLoginClick, onRegisterClick }) => {
     navigate('/puntosTienda');
   };
 
-  const handlePuntosTienda = () => {
-    navigate('/puntosTienda');
-  };
 
   // Estado y referencias para buscador
   const [query, setQuery] = useState('');
@@ -130,7 +127,6 @@ const Navbar = ({ onLoginClick, onRegisterClick }) => {
                   key={item._id}
                   onClick={() => handleSelect(item)}
                   style={{ padding: '6px 8px', cursor: 'pointer' }}
-                  onMouseDown={(e) => e.preventDefault()}
                   onMouseDown={(e) => e.preventDefault()}
                 >
                   {item.competicion ? item.competicion : `${item.equipoLocal} vs ${item.equipoVisitante}`}
