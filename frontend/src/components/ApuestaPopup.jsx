@@ -1,6 +1,6 @@
 import React from 'react';
 import '../../css/ApuestaPopup.css'; 
-import logoJOLIazul from '../assets/LogoJOLIAzul.png';
+import logoJOLIazul from '../assets/LogoJOLIazul.png';
 
 const ApuestaPopup = ({ partido, onClose, onApostar }) => {
   const handleClosePopup = (e) => {
@@ -13,9 +13,9 @@ const ApuestaPopup = ({ partido, onClose, onApostar }) => {
     <div className="login-popup-container" onClick={handleClosePopup}>
       <div className="apuesta-popup" onClick={(e) => e.stopPropagation()}>
         <button className="close-btn" onClick={onClose} aria-label="Cerrar popup">&times;</button>
-        <div className="login-logo">
-          <img src={logoJOLIazul} alt="logo" className="logo-img" />
-        </div>
+      <div className="login-logo">
+                <img src={logoJOLIazul} alt="logo" className="logo-img" />
+              </div>
         <div className="apuesta-partido-card">
           <span className="partido-equipos">{partido.equipoLocal} vs {partido.equipoVisitante}</span>
           <input
@@ -27,6 +27,9 @@ const ApuestaPopup = ({ partido, onClose, onApostar }) => {
         </div>
 
         <div className="apuesta-opciones">
+          <button onClick={() => onApostar('local')} className="apuesta-btn">Gana {partido.equipoLocal}</button>
+          <button onClick={() => onApostar('empate')} className="apuesta-btn">Empate</button>
+          <button onClick={() => onApostar('visitante')} className="apuesta-btn">Gana {partido.equipoVisitante}</button>
           <button onClick={() => onApostar('local')} className="apuesta-btn">Gana {partido.equipoLocal}</button>
           <button onClick={() => onApostar('empate')} className="apuesta-btn">Empate</button>
           <button onClick={() => onApostar('visitante')} className="apuesta-btn">Gana {partido.equipoVisitante}</button>

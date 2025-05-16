@@ -4,7 +4,7 @@ import '../../css/navbar.css';
 import logoJOLIblanco from '../assets/LogoJOLIBlanco.png';
 import { AuthContext } from '../context/AuthContext';
 import MonedaIcon from '../assets/monedaoronav.png';
-import { Search } from 'lucide-react';
+import { Search, User } from 'lucide-react';
 
 const Navbar = ({ onLoginClick, onRegisterClick }) => {
   const navigate = useNavigate();
@@ -22,6 +22,7 @@ const Navbar = ({ onLoginClick, onRegisterClick }) => {
   const handlePuntosTienda = () => {
     navigate('/puntosTienda');
   };
+
 
   // Estado y referencias para buscador
   const [query, setQuery] = useState('');
@@ -71,7 +72,7 @@ const Navbar = ({ onLoginClick, onRegisterClick }) => {
     setTimeout(() => setShowResults(false), 150);
   };
 
-  // Menú desplegable
+  // Menú desplegable usuario
   const [menuOpen, setMenuOpen] = useState(false);
   const toggleMenu = () => setMenuOpen(!menuOpen);
 
@@ -86,6 +87,9 @@ const Navbar = ({ onLoginClick, onRegisterClick }) => {
         />
         <a href="/futbol" className="navbar-link large-link">Fútbol</a>
         <a href="/basquet" className="navbar-link large-link">Básquet</a>
+        <a href="/nosotros" className="navbar-link large-link">¿Quiénes somos?</a>
+        <a href="/contacto" className="navbar-link large-link">Contacto</a>
+
       </div>
 
       <div className="navbar-right">
@@ -146,27 +150,65 @@ const Navbar = ({ onLoginClick, onRegisterClick }) => {
               <span>{monedas}</span>
             </div>
 
-            {/* Icono de usuario/menu */}
-            <div className="user-menu">
+            {/* Icono de perfil con menú */}
+            <div className="user-menu" style={{ position: 'relative' }}>
               <button
                 className="btn btn-light custom-btn"
                 onClick={toggleMenu}
-                style={{ fontSize: '1.2rem', padding: '4px 10px' }}
+                style={{ fontSize: '1.4rem', padding: '4px 8px', display: 'flex', alignItems: 'center', gap: '4px' }}
+                aria-haspopup="true"
+                aria-expanded={menuOpen}
+                aria-label="Menú usuario"
               >
-                ☰
+                <User size={24} />
               </button>
+
               {menuOpen && (
-                <ul className="menu-dropdown">
-                  <li className="menu-item" onClick={() => { handlePuntosTienda(); setMenuOpen(false); }}>
+                <ul
+                  className="menu-dropdown"
+                  style={{
+                    position: 'absolute',
+                    top: '110%',
+                    right: 0,
+                    background: 'white',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                    borderRadius: '6px',
+                    padding: '0.5rem 0',
+                    listStyle: 'none',
+                    minWidth: '140px',
+                    zIndex: 1000,
+                  }}
+                >
+                  <li
+                    className="menu-item"
+                    onClick={() => { navigate('/datosCuenta'); setMenuOpen(false); }}
+                    style={{ padding: '0.5rem 1rem', cursor: 'pointer' }}
+                    onKeyDown={(e) => e.key === 'Enter' && (navigate('/datosCuenta'), setMenuOpen(false))}
+                    tabIndex={0}
+                  >
+                    Mi Cuenta
+                  </li>
+                  <li
+                    className="menu-item"
+                    onClick={() => { handlePuntosTienda(); setMenuOpen(false); }}
+                    style={{ padding: '0.5rem 1rem', cursor: 'pointer' }}
+                    onKeyDown={(e) => e.key === 'Enter' && (handlePuntosTienda(), setMenuOpen(false))}
+                    tabIndex={0}
+                  >
                     Tienda de puntos
                   </li>
-                  <li className="menu-item logout" onClick={() => { handleLogout(); setMenuOpen(false); }}>
+                  <li
+                    className="menu-item logout"
+                    onClick={() => { handleLogout(); setMenuOpen(false); }}
+                    style={{ padding: '0.5rem 1rem', cursor: 'pointer', color: 'red' }}
+                    onKeyDown={(e) => e.key === 'Enter' && (handleLogout(), setMenuOpen(false))}
+                    tabIndex={0}
+                  >
                     Cerrar sesión
                   </li>
                 </ul>
               )}
             </div>
-
           </>
         )}
       </div>

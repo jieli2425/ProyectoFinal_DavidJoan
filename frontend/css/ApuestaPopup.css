@@ -1,5 +1,5 @@
 .apuesta-popup {
-  position: relative; /* Añadido para que el botón se posicione dentro de este div */
+  position: relative; /* Para posicionar la X */
   background-color: white;
   color: #1D3F5B;
   padding: 24px;
@@ -23,7 +23,8 @@
   line-height: 1;
   padding: 8px; /* Espaciado interno del icono, no afecta la posición */
   transition: color 0.2s ease;
-}   
+}
+
 .close-btn:hover {
   color: #12202B;
 }
@@ -59,6 +60,7 @@
   gap: 10px;
   margin-top: 16px;
 }
+
 
 .apuesta-btn {
   background-color: #12202B;
