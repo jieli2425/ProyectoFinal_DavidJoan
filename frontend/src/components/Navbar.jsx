@@ -8,7 +8,7 @@ import { Search, User, Menu, X } from 'lucide-react';
 
 const Navbar = ({ onLoginClick, onRegisterClick, onSearch }) => {
   const navigate = useNavigate();
-  const { isAuthenticated, registrado, logout, monedas } = useContext(AuthContext);
+  const { isAuthenticated, registrado, logout, monedas, loading } = useContext(AuthContext);
 
   const [query, setQuery] = useState('');
   const timeoutRef = useRef(null);
@@ -53,34 +53,36 @@ const Navbar = ({ onLoginClick, onRegisterClick, onSearch }) => {
         </div>
 
         <div className="desktop-buttons">
-          {!isAuthenticated ? (
-            <>
-              <button className="btn btn-light custom-btn" onClick={onLoginClick}>Acceder</button>
-              {!registrado && (
-                <button className="btn btn-light custom-btn" onClick={onRegisterClick}>Registrarse</button>
-              )}
-            </>
-          ) : (
-            <>
-              <div className="monedas-info">
-                <img src={MonedaIcon} alt="Moneda" />
-                <span>{monedas}</span>
-              </div>
-
-              <div className="user-menu">
-                <button onClick={toggleMenu} className="btn btn-light custom-btn" aria-label="Menú usuario">
-                  <User size={24} />
-                </button>
-                {menuOpen && (
-                  <ul className="menu-dropdown">
-                    <li className="menu-item" onClick={() => { navigate('/datosCuenta'); setMenuOpen(false); }}>Mi Cuenta</li>
-                    <li className="menu-item" onClick={() => { handlePuntosTienda(); setMenuOpen(false); }}>Tienda de puntos</li>
-                    <li className="menu-item logout" onClick={() => { handleLogout(); setMenuOpen(false); }}>Cerrar sesión</li>
-                  </ul>
+          {!loading && (
+            !isAuthenticated ? (
+              <>
+                <button className="btn btn-light custom-btn" onClick={onLoginClick}>Acceder</button>
+                {!registrado && (
+                  <button className="btn btn-light custom-btn" onClick={onRegisterClick}>Registrarse</button>
                 )}
-              </div>
-            </>
+              </>
+            ) : (
+              <>
+                <div className="monedas-info">
+                  <img src={MonedaIcon} alt="Moneda" />
+                  <span>{monedas}</span>
+                </div>
+                <div className="user-menu">
+                  <button onClick={toggleMenu} className="btn btn-light custom-btn" aria-label="Menú usuario">
+                    <User size={24} />
+                  </button>
+                  {menuOpen && (
+                    <ul className="menu-dropdown">
+                      <li className="menu-item" onClick={() => { navigate('/datosCuenta'); setMenuOpen(false); }}>Mi Cuenta</li>
+                      <li className="menu-item" onClick={() => { handlePuntosTienda(); setMenuOpen(false); }}>Tienda de puntos</li>
+                      <li className="menu-item logout" onClick={() => { handleLogout(); setMenuOpen(false); }}>Cerrar sesión</li>
+                    </ul>
+                  )}
+                </div>
+              </>
+            )
           )}
+
         </div>
 
         {/* Botón hamburguesa para móvil */}

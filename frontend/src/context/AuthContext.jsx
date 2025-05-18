@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, useRef } from 'react';
 
 const API_URL = 'http://localhost:5000';
 
@@ -10,54 +10,89 @@ export const AuthProvider = ({ children }) => {
   const [monedas, setMonedas] = useState(0);
   const [registrado, setRegistrado] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [loading, setLoading] = useState(true); // 👈 NUEVO estado de carga
+  const [loading, setLoading] = useState(true);
+
+  const isMounted = useRef(true); // Para evitar setState si componente desmontado
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    const nombreGuardado = localStorage.getItem('nombre');
-    const registradoGuardado = localStorage.getItem('registrado') === 'true';
+    isMounted.current = true;
 
-    if (token) {
-      fetch(`${API_URL}/api/auth/verificar`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ token })
-      })
-        .then(response => response.json())
-        .then(data => {
-          if (data.isAdmin !== undefined) {
+    const verificarUsuario = async () => {
+      setLoading(true);
+
+      const token = localStorage.getItem('token');
+      const nombreGuardado = localStorage.getItem('nombre');
+      const registradoGuardado = localStorage.getItem('registrado') === 'true';
+
+      setRegistrado(registradoGuardado);
+
+      if (token) {
+        try {
+          const resVerificar = await fetch(`${API_URL}/api/auth/verificar`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token }),
+          });
+
+          if (!resVerificar.ok) throw new Error('Token inválido o error servidor');
+
+          const dataVerificar = await resVerificar.json();
+
+          if (dataVerificar.isAdmin !== undefined) {
+            if (!isMounted.current) return;
+
             setIsAuthenticated(true);
             setNombre(nombreGuardado);
-            setIsAdmin(data.isAdmin);
+            setIsAdmin(dataVerificar.isAdmin);
 
-            return fetch(`${API_URL}/api/usuarios/perfil`, {
+            const resPerfil = await fetch(`${API_URL}/api/usuarios/perfil`, {
               headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-              }
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json',
+              },
             });
-          } else {
-            throw new Error('Datos de usuario inválidos');
-          }
-        })
-        .then(response => response.json())
-        .then(data => {
-          if (data.monedas) {
-            setMonedas(data.monedas);
-          }
-        })
-        .catch(error => {
-          console.error('Error en la verificación:', error);
-          logout();
-        })
-        .finally(() => setLoading(false));
-    } else {
-      setLoading(false);
-    }
 
-    setRegistrado(registradoGuardado);
+            if (!resPerfil.ok) throw new Error('Error al obtener perfil');
+
+            const dataPerfil = await resPerfil.json();
+
+            if (!isMounted.current) return;
+
+            setMonedas(dataPerfil.monedas || 0);
+
+          } else {
+            // No hagas logout automático, solo limpia estado localmente
+            if (!isMounted.current) return;
+            setIsAuthenticated(false);
+            setNombre('');
+            setIsAdmin(false);
+            setMonedas(0);
+          }
+        } catch (error) {
+          console.error('Error en la verificación:', error);
+          // No llamar logout automático para evitar deslogueos no deseados
+          if (!isMounted.current) return;
+          setIsAuthenticated(false);
+          setNombre('');
+          setIsAdmin(false);
+          setMonedas(0);
+        }
+      } else {
+        if (!isMounted.current) return;
+        setIsAuthenticated(false);
+        setNombre('');
+        setIsAdmin(false);
+        setMonedas(0);
+      }
+
+      if (isMounted.current) setLoading(false);
+    };
+
+    verificarUsuario();
+
+    return () => {
+      isMounted.current = false; // Limpieza para no setear estado si desmontado
+    };
   }, []);
 
   const login = (token, nombre, isAdmin) => {
@@ -71,9 +106,9 @@ export const AuthProvider = ({ children }) => {
     fetch(`${API_URL}/api/usuarios/perfil`, {
       method: 'GET',
       headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      }
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
     })
       .then(response => {
         if (!response.ok) {
@@ -82,9 +117,7 @@ export const AuthProvider = ({ children }) => {
         return response.json();
       })
       .then(data => {
-        if (data.monedas) {
-          setMonedas(data.monedas);
-        }
+        setMonedas(data.monedas || 0);
       })
       .catch(error => console.error('Error obteniendo el perfil:', error));
   };
@@ -106,17 +139,19 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{
-      isAuthenticated,
-      registrado,
-      login,
-      logout,
-      registro,
-      nombre,
-      monedas,
-      isAdmin,
-      loading
-    }}>
+    <AuthContext.Provider
+      value={{
+        isAuthenticated,
+        registrado,
+        login,
+        logout,
+        registro,
+        nombre,
+        monedas,
+        isAdmin,
+        loading,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

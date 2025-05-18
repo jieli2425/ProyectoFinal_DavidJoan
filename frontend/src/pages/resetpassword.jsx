@@ -4,6 +4,8 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import '../../css/terminos.css';
 
+const API_URL = 'http://localhost:5000';
+
 const ResetPassword = () => {
   const [newPassword, setNewPassword] = useState('');
   const [repeatPassword, setRepeatPassword] = useState('');
@@ -31,7 +33,7 @@ const ResetPassword = () => {
     }
 
     try {
-      const res = await fetch(`${process.env.REACT_APP_API_URL}/auth/reset-password`, {
+      const res = await fetch(`${API_URL}/api/auth/reset-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token, newPassword }),

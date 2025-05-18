@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 
+const API_URL = 'http://localhost:5000';
+
 const PreguntarEmail = () => {
   const [email, setEmail] = useState('');
   const [msg, setMsg] = useState('');
@@ -13,7 +15,7 @@ const PreguntarEmail = () => {
   setMsg('');
 
   try {
-    const res = await fetch('http://localhost:5000/auth/solicitar-reset', {  // URL backend fija aquí
+    const res = await fetch(`${API_URL}/api/auth/solicitar-reset`, {  // URL backend fija aquí
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email }),
