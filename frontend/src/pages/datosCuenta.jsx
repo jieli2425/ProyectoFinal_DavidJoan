@@ -43,7 +43,7 @@ const DatosCuenta = () => {
       <Navbar />
 
       <main className="datos-cuenta-container">
-        <h2>Tu cuenta</h2>
+        <h2>Mi cuenta</h2>
 
         {error && <p style={{ color: 'red' }}>{error}</p>}
         {!usuario && !error && <p>Cargando datos de tu cuenta...</p>}

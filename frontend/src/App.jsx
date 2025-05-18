@@ -12,6 +12,7 @@ import Politica from './pages/politica';
 import SobreNosotros from './pages/sobrenosotros';
 import Contacto from './pages/contacto';
 import { AuthProvider } from './context/AuthContext';
+import PreguntarEmail from './pages/preguntaremail';
 // import AdminHome from './components/AdminHome';
 
 
@@ -32,6 +33,7 @@ const App = () => (
         <Route path="/politica" element={<Politica />} />
         <Route path="/nosotros" element={<SobreNosotros />} />
         <Route path="/contacto" element={<Contacto />} />
+        <Route path="/preguntar-email" element={<PreguntarEmail/>} />
         <Route path="/recuperar-contrasena" element={<ResetPassword />} />
 
       </Routes>

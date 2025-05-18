@@ -5,7 +5,7 @@
   margin-right: auto;
   padding: 2rem;
   background-color: white;
-  max-width: 650px; /* ← Aumentado */
+  max-width: 550px; /* ← Reducido */
   width: 100%;
   border-radius: 20px;
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
@@ -19,5 +19,4 @@
 .datos-info p {
   font-size: 1.1rem;
   margin-bottom: 0.8rem;
-  
 }

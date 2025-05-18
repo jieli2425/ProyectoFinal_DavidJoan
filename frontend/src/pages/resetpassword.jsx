@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import '../../css/terminos.css';
 
 const ResetPassword = () => {
   const [newPassword, setNewPassword] = useState('');
@@ -14,22 +15,32 @@ const ResetPassword = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!token) {
+      setMsg('Token inválido o no proporcionado');
+      return;
+    }
+
     if (newPassword !== repeatPassword) {
       setMsg('Las contraseñas no coinciden');
       return;
     }
 
+    if (newPassword.length < 6) {
+      setMsg('La contraseña debe tener al menos 6 caracteres');
+      return;
+    }
+
     try {
-      const res = await fetch('/auth/reset-password', {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/auth/reset-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token, newPassword })
+        body: JSON.stringify({ token, newPassword }),
       });
 
       const data = await res.json();
 
       if (res.ok) {
-        navigate('/'); // redirige al menú principal
+        navigate('/');
       } else {
         setMsg(data.msg || 'Error al cambiar la contraseña');
       }
@@ -39,37 +50,60 @@ const ResetPassword = () => {
   };
 
   return (
-    <>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <Navbar />
 
-      <div style={{ maxWidth: 400, margin: '100px auto', textAlign: 'center' }}>
-        <h2>Restablecer contraseña</h2>
-        <form onSubmit={handleSubmit}>
-          <input
-            type="password"
-            placeholder="Nueva contraseña"
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
-            required
-            style={{ width: '100%', padding: '10px', margin: '10px 0' }}
-          />
-          <input
-            type="password"
-            placeholder="Repetir contraseña"
-            value={repeatPassword}
-            onChange={(e) => setRepeatPassword(e.target.value)}
-            required
-            style={{ width: '100%', padding: '10px', margin: '10px 0' }}
-          />
-          <button type="submit" style={{ padding: '10px 20px', cursor: 'pointer' }}>
-            Enviar
-          </button>
-        </form>
-        {msg && <p style={{ color: 'red', marginTop: '10px' }}>{msg}</p>}
-      </div>
+      <main style={{ flex: 1 }}>
+        <div className="terminos-container" style={{ maxWidth: '500px' }}>
+          <h2 style={{ textAlign: 'center' }}>Restablecer contraseña</h2>
+          <form onSubmit={handleSubmit}>
+            <input
+              type="password"
+              placeholder="Nueva contraseña"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              required
+              style={{
+                width: '100%',
+                padding: '10px',
+                margin: '10px 0',
+                borderRadius: '5px',
+                border: '1px solid #ccc',
+              }}
+            />
+            <input
+              type="password"
+              placeholder="Repetir contraseña"
+              value={repeatPassword}
+              onChange={(e) => setRepeatPassword(e.target.value)}
+              required
+              style={{
+                width: '100%',
+                padding: '10px',
+                margin: '10px 0',
+                borderRadius: '5px',
+                border: '1px solid #ccc',
+              }}
+            />
+            <button
+              type="submit"
+              className="custom-btn"
+              style={{
+                padding: '10px 20px',
+                cursor: 'pointer',
+                borderRadius: '5px',
+                width: '100%',
+              }}
+            >
+              Enviar
+            </button>
+          </form>
+          {msg && <p style={{ color: 'red', marginTop: '10px', textAlign: 'center' }}>{msg}</p>}
+        </div>
+      </main>
 
       <Footer />
-    </>
+    </div>
   );
 };
 

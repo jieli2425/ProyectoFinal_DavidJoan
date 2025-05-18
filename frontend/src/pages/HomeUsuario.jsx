@@ -1,25 +1,28 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom'; // Para navegar si quieres usarlo (opcional)
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import ApuestaPopup from '../components/ApuestaPopup'; // Popup apostar
+import ApuestaPopup from '../components/ApuestaPopup';
 import '../../css/home.css';
 import banderaEspaña from '../assets/banderaespaña.png';
 import banderaInglaterra from '../assets/banderainglaterra.png';
 import banderaUE from '../assets/banderaue.png';
-import banderaEEUU from '../assets/banderaeeuu.png';
 import laliga from '../assets/laliga.png';
 import premierleague from '../assets/premierleague.png';
 import championsleague from '../assets/championsleague.png';
-import NBA from '../assets/nba.png';
 import futbolicono from '../assets/logofutbol.png';
-import basketicono from '../assets/logobasket.png';
 
 const HomeUsuario = () => {
   const [apuestaOpen, setApuestaOpen] = useState(false);
+  const [partidoSeleccionado, setPartidoSeleccionado] = useState(null);
+
   const [partidos, setPartidos] = useState([]);
   const [partidosPremierLeague, setPartidosPremierLeague] = useState([]);
   const [partidosChampionsLeague, setPartidosChampionsLeague] = useState([]);
-  const [partidoSeleccionado, setPartidoSeleccionado] = useState(null);
+
+  // Estados para búsqueda
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
 
   useEffect(() => {
     fetch('/api/partidos')
@@ -36,7 +39,7 @@ const HomeUsuario = () => {
   }, []);
 
   const partidosFutbol = partidos.filter(p => p.deporte === 'futbol');
-  const partidosBasquet = partidos.filter(p => p.deporte === 'basquet');
+  // const partidosBasquet = partidos.filter(p => p.deporte === 'basquet'); // Si lo quieres usar después
 
   const scrollToSection = (sectionId) => {
     document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth' });
@@ -47,9 +50,28 @@ const HomeUsuario = () => {
     setApuestaOpen(true);
   };
 
+  // Función para buscar partidos
+  const handleSearch = async (query) => {
+    setSearchQuery(query);
+    if (!query) {
+      setSearchResults([]);
+      return;
+    }
+
+    try {
+      const res = await fetch(`/api/partidos/search?q=${encodeURIComponent(query)}`);
+      if (!res.ok) throw new Error('Error en la búsqueda');
+      const data = await res.json();
+      setSearchResults(data);
+    } catch (error) {
+      console.error(error);
+      setSearchResults([]);
+    }
+  };
+
   return (
     <div>
-      <Navbar onRegisterClick={() => window.location.href = '/registro'} />
+      <Navbar onRegisterClick={() => window.location.href = '/registro'} onSearch={handleSearch} />
 
       {apuestaOpen && (
         <ApuestaPopup
@@ -62,98 +84,127 @@ const HomeUsuario = () => {
       )}
 
       <div className="home-content">
-        <div className="ligas-grid">
-          <div className="liga-card" onClick={() => scrollToSection('liga-espanola')}>
-            <img src={banderaEspaña} alt="España" className="liga-img" />
-            <img src={futbolicono} alt="Pelota de Futbol" className="liga-icon" />
-            <h3>Liga EA Sports</h3>
+
+        {/* Mostrar resultados de búsqueda si hay */}
+        {searchResults.length > 0 && searchQuery ? (
+          <div style={{ marginBottom: '1rem' }}>
+            <h2>Resultados de búsqueda para: "{searchQuery}"</h2>
+            {searchResults.map(item => (
+              <div key={item._id} className="partido-card" style={{ cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span className="partido-equipos">
+                  {item.equipoLocal && item.equipoVisitante
+                    ? `${item.equipoLocal} vs ${item.equipoVisitante}`
+                    : item.competicion}
+                </span>
+                <input
+                  type="text"
+                  className="hora-input"
+                  value={new Date(item.fecha).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  readOnly
+                />
+                <button
+                  className="btn btn-light btn-sm apostar-btn"
+                  onClick={() => handleApostarClick(item)}
+                >
+                  Apostar
+                </button>
+              </div>
+            ))}
           </div>
-          <div className="liga-card" onClick={() => scrollToSection('premier-league')}>
-            <img src={banderaInglaterra} alt="Inglaterra" className="liga-img" />
-            <img src={futbolicono} alt="Pelota de Futbol" className="liga-icon" />
-            <h3>Premier League</h3>
-          </div>
-          <div className="liga-card" onClick={() => scrollToSection('champions-league')}>
-            <img src={banderaUE} alt="Champions" className="liga-img" />
-            <img src={futbolicono} alt="Pelota de Futbol" className="liga-icon" />
-            <h3>Champions League</h3>
-          </div>
-          
-        </div>
-
-        <div id="liga-espanola">
-          <h2 style={{ display: 'flex', alignItems: 'center', color: '#1D3F5B' }}>
-            Liga EA SPORTS
-            <img src={laliga} alt="Logo EA Sports" style={{ height: '24px', marginLeft: '10px' }} />
-          </h2>
-          {partidosFutbol.map(p => (
-            <div key={p._id} className="partido-card">
-              <span className="partido-equipos">{p.equipoLocal} vs {p.equipoVisitante}</span>
-              <input
-                type="text"
-                className="hora-input"
-                value={new Date(p.fecha).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                readOnly
-              />
-              <button
-                className="btn btn-light btn-sm apostar-btn"
-                onClick={() => handleApostarClick(p)}
-              >
-                Apostar
-              </button>
+        ) : (
+          <>
+            <div className="ligas-grid">
+              <div className="liga-card" onClick={() => scrollToSection('liga-espanola')}>
+                <img src={banderaEspaña} alt="España" className="liga-img" />
+                <img src={futbolicono} alt="Pelota de Futbol" className="liga-icon" />
+                <h3>Liga EA Sports</h3>
+              </div>
+              <div className="liga-card" onClick={() => scrollToSection('premier-league')}>
+                <img src={banderaInglaterra} alt="Inglaterra" className="liga-img" />
+                <img src={futbolicono} alt="Pelota de Futbol" className="liga-icon" />
+                <h3>Premier League</h3>
+              </div>
+              <div className="liga-card" onClick={() => scrollToSection('champions-league')}>
+                <img src={banderaUE} alt="Champions" className="liga-img" />
+                <img src={futbolicono} alt="Pelota de Futbol" className="liga-icon" />
+                <h3>Champions League</h3>
+              </div>
             </div>
-          ))}
-        </div>
 
-        <div id="premier-league">
-          <h2 style={{ display: 'flex', alignItems: 'center', color: '#1D3F5B' }}>
-            Premier League
-            <img src={premierleague} alt="Logo Premier" style={{ height: '24px', marginLeft: '10px' }} />
-          </h2>
-          {partidosPremierLeague.map(p => (
-            <div key={p._id} className="partido-card">
-              <span className="partido-equipos">{p.equipoLocal} vs {p.equipoVisitante}</span>
-              <input
-                type="text"
-                className="hora-input"
-                value={new Date(p.fecha).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                readOnly
-              />
-              <button
-                className="btn btn-light btn-sm apostar-btn"
-                onClick={() => handleApostarClick(p)}
-              >
-                Apostar
-              </button>
+            <div id="liga-espanola">
+              <h2 style={{ display: 'flex', alignItems: 'center', color: '#1D3F5B' }}>
+                Liga EA SPORTS
+                <img src={laliga} alt="Logo EA Sports" style={{ height: '24px', marginLeft: '10px' }} />
+              </h2>
+              {partidosFutbol.map(p => (
+                <div key={p._id} className="partido-card">
+                  <span className="partido-equipos">{p.equipoLocal} vs {p.equipoVisitante}</span>
+                  <input
+                    type="text"
+                    className="hora-input"
+                    value={new Date(p.fecha).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    readOnly
+                  />
+                  <button
+                    className="btn btn-light btn-sm apostar-btn"
+                    onClick={() => handleApostarClick(p)}
+                  >
+                    Apostar
+                  </button>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
 
-        <div id="champions-league">
-          <h2 style={{ display: 'flex', alignItems: 'center', color: '#1D3F5B' }}>
-            Champions League
-            <img src={championsleague} alt="Logo Champions" style={{ height: '24px', marginLeft: '10px' }} />
-          </h2>
-          {partidosChampionsLeague.map(p => (
-            <div key={p._id} className="partido-card">
-              <span className="partido-equipos">{p.equipoLocal} vs {p.equipoVisitante}</span>
-              <input
-                type="text"
-                className="hora-input"
-                value={new Date(p.fecha).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                readOnly
-              />
-              <button
-                className="btn btn-light btn-sm apostar-btn"
-                onClick={() => handleApostarClick(p)}
-              >
-                Apostar
-              </button>
+            <div id="premier-league">
+              <h2 style={{ display: 'flex', alignItems: 'center', color: '#1D3F5B' }}>
+                Premier League
+                <img src={premierleague} alt="Logo Premier" style={{ height: '24px', marginLeft: '10px' }} />
+              </h2>
+              {partidosPremierLeague.map(p => (
+                <div key={p._id} className="partido-card">
+                  <span className="partido-equipos">{p.equipoLocal} vs {p.equipoVisitante}</span>
+                  <input
+                    type="text"
+                    className="hora-input"
+                    value={new Date(p.fecha).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    readOnly
+                  />
+                  <button
+                    className="btn btn-light btn-sm apostar-btn"
+                    onClick={() => handleApostarClick(p)}
+                  >
+                    Apostar
+                  </button>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
 
-        
+            <div id="champions-league">
+              <h2 style={{ display: 'flex', alignItems: 'center', color: '#1D3F5B' }}>
+                Champions League
+                <img src={championsleague} alt="Logo Champions" style={{ height: '24px', marginLeft: '10px' }} />
+              </h2>
+              {partidosChampionsLeague.map(p => (
+                <div key={p._id} className="partido-card">
+                  <span className="partido-equipos">{p.equipoLocal} vs {p.equipoVisitante}</span>
+                  <input
+                    type="text"
+                    className="hora-input"
+                    value={new Date(p.fecha).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    readOnly
+                  />
+                  <button
+                    className="btn btn-light btn-sm apostar-btn"
+                    onClick={() => handleApostarClick(p)}
+                  >
+                    Apostar
+                  </button>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+
       </div>
 
       <Footer />

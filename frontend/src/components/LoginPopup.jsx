@@ -96,7 +96,7 @@ const LoginPopup = ({ onClose }) => {
           <button onClick={handleLogin} className="login-btn">Entrar</button>
         </div>
         <div className="links-container">
-          <a href="/recuperar-contrasena" className="link">¿Has olvidado tu contraseña?</a>
+          <a href="/preguntar-email" className="link">¿Has olvidado tu contraseña?</a>
           <a href="/registro" className="link">¿Nuevo Usuario? Regístrate</a>
         </div>
       </div>
