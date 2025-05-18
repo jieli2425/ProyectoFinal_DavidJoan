@@ -1,18 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import ApuestaPopup from '../components/ApuestaPopup'; // Popup apostar
+import ApuestaPopup from '../components/ApuestaPopup';
 import '../../css/home.css';
 import banderaEspaña from '../assets/banderaespaña.png';
 import banderaInglaterra from '../assets/banderainglaterra.png';
 import banderaUE from '../assets/banderaue.png';
-import banderaEEUU from '../assets/banderaeeuu.png';
 import laliga from '../assets/laliga.png';
 import premierleague from '../assets/premierleague.png';
 import championsleague from '../assets/championsleague.png';
-import NBA from '../assets/nba.png';
 import futbolicono from '../assets/logofutbol.png';
-import basketicono from '../assets/logobasket.png';
 
 const HomeUsuario = () => {
   const [apuestaOpen, setApuestaOpen] = useState(false);
@@ -20,23 +17,46 @@ const HomeUsuario = () => {
   const [partidosPremierLeague, setPartidosPremierLeague] = useState([]);
   const [partidosChampionsLeague, setPartidosChampionsLeague] = useState([]);
   const [partidoSeleccionado, setPartidoSeleccionado] = useState(null);
+  const usuarioData = localStorage.getItem('usuario');
+  const usuario = usuarioData ? JSON.parse(usuarioData) : null;
+  const token = localStorage.getItem('token');
 
-  useEffect(() => {
+  const [monedas, setMonedas] = useState(usuario?.monedas || 0);
+
+  const actualizarUsuario = (nuevasMonedas) => {
+    setMonedas(nuevasMonedas);
+    const usuarioActualizado = { ...usuario, monedas: nuevasMonedas };
+    localStorage.setItem('usuario', JSON.stringify(usuarioActualizado));
+  };
+
+  const refrescarApuestas = () => {
+    console.log('Apuestas refrescadas');
     fetch('/api/partidos')
       .then(res => res.json())
       .then(setPartidos);
+  };
 
-    fetch('/api/partidos/premier-league')
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    const headers = {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    };
+
+    fetch('/api/partidos', { headers })
+      .then(res => res.json())
+      .then(setPartidos);
+
+    fetch('/api/partidos/premier-league', { headers })
       .then(res => res.json())
       .then(setPartidosPremierLeague);
 
-    fetch('/api/partidos/champions-league')
+    fetch('/api/partidos/champions-league', { headers })
       .then(res => res.json())
       .then(setPartidosChampionsLeague);
   }, []);
 
   const partidosFutbol = partidos.filter(p => p.deporte === 'futbol');
-  const partidosBasquet = partidos.filter(p => p.deporte === 'basquet');
 
   const scrollToSection = (sectionId) => {
     document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth' });
@@ -51,6 +71,7 @@ const HomeUsuario = () => {
     <div>
       <Navbar onRegisterClick={() => window.location.href = '/registro'} />
 
+      {/* Popup de apuesta */}
       {apuestaOpen && (
         <ApuestaPopup
           partido={partidoSeleccionado}
@@ -58,6 +79,8 @@ const HomeUsuario = () => {
             setApuestaOpen(false);
             setPartidoSeleccionado(null);
           }}
+          onApostar={refrescarApuestas}
+          actualizarUsuario={actualizarUsuario}
         />
       )}
 

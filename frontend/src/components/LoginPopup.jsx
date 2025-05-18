@@ -34,17 +34,17 @@ const LoginPopup = ({ onClose }) => {
       }
 
       if (data.token) {
-        console.log('Login exitoso:', {
-          nombre: data.nombre,
-          isAdmin: data.isAdmin,
-          token: data.token
-        });
+          localStorage.setItem('token', data.token);
+          localStorage.setItem('usuario', JSON.stringify({
+            _id: data._id,
+            nombre: data.nombre,
+            isAdmin: data.isAdmin,
+            monedas: data.monedas || 0
+          }));
 
-        // Primero cerramos el popup
         onClose(true);
 
-        // Luego hacemos login
-        await login(data.token, data.nombre, data.isAdmin);
+        await login(data.token, data.nombre, data.isAdmin, data.monedas, data._id);
 
         // Finalmente redirigimos
         if (data.isAdmin) {

@@ -6,13 +6,10 @@ import '../../css/home.css';
 import banderaEspaña from '../assets/banderaespaña.png';
 import banderaInglaterra from '../assets/banderainglaterra.png';
 import banderaUE from '../assets/banderaue.png';
-import banderaEEUU from '../assets/banderaeeuu.png';
 import laliga from '../assets/laliga.png';
 import premierleague from '../assets/premierleague.png';
 import championsleague from '../assets/championsleague.png';
-import NBA from '../assets/nba.png';
 import futbolicono from '../assets/logofutbol.png';
-import basketicono from '../assets/logobasket.png';
 
 
 
@@ -41,9 +38,6 @@ const Home = () => {
 
 
   const partidosFutbol = partidos.filter(p => p.deporte === 'futbol');
-  // const partidosPremierLeague = partidosFutbol.filter(p => p.competicion === 'Premier League');
-  // const partidosChampionsLeague = partidosFutbol.filter(p => p.competicion === 'UEFA Champions League');
-  const partidosBasquet = partidos.filter(p => p.deporte === 'basquet');
 
   const scrollToSection = (sectionId) => {
     document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth' });

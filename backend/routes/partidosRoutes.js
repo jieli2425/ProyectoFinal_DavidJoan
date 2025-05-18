@@ -101,8 +101,8 @@ router.get('/search', async (req, res) => {
         { equipoLocal: regex },
         { equipoVisitante: regex }
       ],
-      estado: 'pendiente' // opcional, solo pendientes
-    }).limit(10); // limitar resultados para mejorar performance
+      estado: 'pendiente'
+    }).limit(10);
 
     res.json(partidos);
   } catch (err) {

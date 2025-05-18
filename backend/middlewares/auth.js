@@ -2,65 +2,51 @@ const jwt = require('jsonwebtoken');
 
 function verificarToken(req, res, next) {
   try {
-    const token = req.headers['authorization']?.split(' ')[1];
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
 
     if (!token) {
-      return res.status(401).json({ 
-        message: 'No se proporcionó token de autenticación',
-        code: 'NO_TOKEN'
-      });
+      return res.status(401).json({ message: 'Token no proporcionado' });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
-    next();
-  } catch (error) {
-    if (error.name === 'TokenExpiredError') {
-      return res.status(401).json({ 
-        message: 'El token ha expirado',
-        code: 'TOKEN_EXPIRED'
-      });
-    }
-    return res.status(401).json({ 
-      message: 'Token inválido',
-      code: 'INVALID_TOKEN'
+    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+      if (err) {
+        return res.status(401).json({ message: 'Token inválido o expirado' });
+      }
+
+      req.user = decoded;
+      next();
     });
+  } catch (error) {
+    console.error('Error en verificación de token:', error);
+    return res.status(401).json({ message: 'Error en la autenticación' });
   }
 }
 
 function verificarAdmin(req, res, next) {
   try {
-    const token = req.headers['authorization']?.split(' ')[1];
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
 
     if (!token) {
-      return res.status(401).json({ 
-        message: 'No se proporcionó token de autenticación',
-        code: 'NO_TOKEN'
-      });
+      return res.status(401).json({ message: 'Token no proporcionado' });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    
-    if (!decoded.isAdmin) {
-      return res.status(403).json({ 
-        message: 'Acceso denegado. Se requiere rol de administrador',
-        code: 'NOT_ADMIN'
-      });
-    }
+    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+      if (err) {
+        return res.status(401).json({ message: 'Token inválido o expirado' });
+      }
 
-    req.user = decoded;
-    next();
-  } catch (error) {
-    if (error.name === 'TokenExpiredError') {
-      return res.status(401).json({ 
-        message: 'El token ha expirado',
-        code: 'TOKEN_EXPIRED'
-      });
-    }
-    return res.status(401).json({ 
-      message: 'Token inválido',
-      code: 'INVALID_TOKEN'
+      if (!decoded.isAdmin) {
+        return res.status(403).json({ message: 'Acceso denegado. Se requiere rol de administrador' });
+      }
+
+      req.user = decoded;
+      next();
     });
+  } catch (error) {
+    console.error('Error en verificación de admin:', error);
+    return res.status(401).json({ message: 'Error en la autenticación' });
   }
 }
 
