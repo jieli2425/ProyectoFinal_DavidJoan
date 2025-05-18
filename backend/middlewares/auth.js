@@ -1,53 +1,19 @@
 const jwt = require('jsonwebtoken');
 
-function verificarToken(req, res, next) {
+const verificarToken = (req, res, next) => {
+  const token = req.headers['authorization']?.split(' ')[1];
+  if (!token) return res.status(401).json({ msg: 'Token requerido' });
   try {
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
-
-    if (!token) {
-      return res.status(401).json({ message: 'Token no proporcionado' });
-    }
-
-    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-      if (err) {
-        return res.status(401).json({ message: 'Token inválido o expirado' });
-      }
-
-      req.user = decoded;
-      next();
-    });
-  } catch (error) {
-    console.error('Error en verificación de token:', error);
-    return res.status(401).json({ message: 'Error en la autenticación' });
+    req.user = jwt.verify(token, process.env.JWT_SECRET);
+    next();
+  } catch {
+    res.status(403).json({ msg: 'Token inválido' });
   }
-}
+};
 
-function verificarAdmin(req, res, next) {
-  try {
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
-
-    if (!token) {
-      return res.status(401).json({ message: 'Token no proporcionado' });
-    }
-
-    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-      if (err) {
-        return res.status(401).json({ message: 'Token inválido o expirado' });
-      }
-
-      if (!decoded.isAdmin) {
-        return res.status(403).json({ message: 'Acceso denegado. Se requiere rol de administrador' });
-      }
-
-      req.user = decoded;
-      next();
-    });
-  } catch (error) {
-    console.error('Error en verificación de admin:', error);
-    return res.status(401).json({ message: 'Error en la autenticación' });
-  }
-}
+const verificarAdmin = (req, res, next) => {
+  if (!req.user?.isAdmin) return res.status(403).json({ msg: 'Acceso solo para administradores' });
+  next();
+};
 
 module.exports = { verificarToken, verificarAdmin };

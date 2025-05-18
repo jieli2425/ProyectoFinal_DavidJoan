@@ -10,60 +10,63 @@ export const AuthProvider = ({ children }) => {
   const [monedas, setMonedas] = useState(0);
   const [registrado, setRegistrado] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [loading, setLoading] = useState(true); // 👈 NUEVO estado de carga
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    const nombreGuardado = localStorage.getItem('nombre');
-    const registradoGuardado = localStorage.getItem('registrado') === 'true';
+    const verificarToken = async () => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setLoading(false);
+        return;
+      }
 
-    if (token) {
-      fetch(`${API_URL}/api/auth/verificar`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ token })
-      })
-        .then(response => response.json())
-        .then(data => {
-          if (data.isAdmin !== undefined) {
-            setIsAuthenticated(true);
-            setNombre(nombreGuardado);
-            setIsAdmin(data.isAdmin);
+      try {
+        const nombreGuardado = localStorage.getItem('nombre');
+        const registradoGuardado = localStorage.getItem('registrado') === 'true';
+        const isAdminGuardado = localStorage.getItem('isAdmin') === 'true';
 
-            return fetch(`${API_URL}/api/usuarios/perfil`, {
-              headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-              }
-            });
-          } else {
-            throw new Error('Datos de usuario inválidos');
-          }
-        })
-        .then(response => response.json())
-        .then(data => {
-          if (data.monedas) {
-            setMonedas(data.monedas);
-          }
-        })
-        .catch(error => {
-          console.error('Error en la verificación:', error);
-          logout();
-        })
-        .finally(() => setLoading(false));
-    } else {
-      setLoading(false);
-    }
+        const resVerificar = await fetch(`${API_URL}/api/auth/verificar`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token }),
+        });
 
-    setRegistrado(registradoGuardado);
+        const dataVerificar = await resVerificar.json();
+
+        if (dataVerificar.isAdmin !== undefined) {
+          setIsAuthenticated(true);
+          setNombre(nombreGuardado);
+          setIsAdmin(isAdminGuardado);
+          setRegistrado(registradoGuardado);
+
+          const resPerfil = await fetch(`${API_URL}/api/usuarios/perfil`, {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+          });
+
+          const dataPerfil = await resPerfil.json();
+
+          if (dataPerfil.monedas) setMonedas(dataPerfil.monedas);
+        } else {
+          throw new Error('Datos de usuario inválidos');
+        }
+      } catch (error) {
+        console.error('Error en la verificación:', error);
+        logout();
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    verificarToken();
   }, []);
 
   const login = (token, nombre, isAdmin) => {
     localStorage.setItem('token', token);
     localStorage.setItem('nombre', nombre);
-    localStorage.setItem('isAdmin', isAdmin);
+    localStorage.setItem('isAdmin', isAdmin ? 'true' : 'false');
     setIsAuthenticated(true);
     setNombre(nombre);
     setIsAdmin(isAdmin);
@@ -72,8 +75,8 @@ export const AuthProvider = ({ children }) => {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      }
+        'Content-Type': 'application/json',
+      },
     })
       .then(response => {
         if (!response.ok) {
@@ -85,6 +88,9 @@ export const AuthProvider = ({ children }) => {
         if (data.monedas) {
           setMonedas(data.monedas);
         }
+        if (data._id) {
+        localStorage.setItem('usuario', JSON.stringify(data));
+      }
       })
       .catch(error => console.error('Error obteniendo el perfil:', error));
   };
@@ -93,10 +99,12 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('token');
     localStorage.removeItem('nombre');
     localStorage.removeItem('isAdmin');
+    localStorage.removeItem('registrado');
     setIsAuthenticated(false);
     setNombre('');
     setMonedas(0);
     setIsAdmin(false);
+    setRegistrado(false);
   };
 
   const registro = (token, nombre) => {
@@ -106,17 +114,19 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{
-      isAuthenticated,
-      registrado,
-      login,
-      logout,
-      registro,
-      nombre,
-      monedas,
-      isAdmin,
-      loading
-    }}>
+    <AuthContext.Provider
+      value={{
+        isAuthenticated,
+        registrado,
+        login,
+        logout,
+        registro,
+        nombre,
+        monedas,
+        isAdmin,
+        loading,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

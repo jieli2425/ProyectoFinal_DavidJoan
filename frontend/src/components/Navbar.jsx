@@ -23,8 +23,6 @@ const Navbar = ({ onLoginClick, onRegisterClick }) => {
     navigate('/puntosTienda');
   };
 
-
-  // Estado y referencias para buscador
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
   const [showResults, setShowResults] = useState(false);
@@ -143,10 +141,12 @@ const Navbar = ({ onLoginClick, onRegisterClick }) => {
           </>
         ) : (
           <>
+          {isAuthenticated && (
             <div className="monedas-info" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <img src={MonedaIcon} alt="Moneda" style={{ width: '20px', height: '20px' }} />
               <span>{monedas}</span>
             </div>
+          )}
 
             {/* Icono de perfil con menú */}
             <div className="user-menu" style={{ position: 'relative' }}>
@@ -194,6 +194,15 @@ const Navbar = ({ onLoginClick, onRegisterClick }) => {
                     tabIndex={0}
                   >
                     Tienda de puntos
+                  </li>
+                  <li
+                    className="menu-item"
+                    onClick={() => { navigate('/mis-apuestas'); setMenuOpen(false); }}
+                    style={{ padding: '0.5rem 1rem', cursor: 'pointer' }}
+                    onKeyDown={(e) => e.key === 'Enter' && (navigate('/mis-apuestas'), setMenuOpen(false))}
+                    tabIndex={0}
+                  >
+                    Mis Apuestas
                   </li>
                   <li
                     className="menu-item logout"

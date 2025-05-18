@@ -3,13 +3,14 @@ import '../../css/ApuestaPopup.css';
 import logoJOLIazul from '../assets/LogoJOLIazul.png';
 
 const ApuestaPopup = ({ partido, onClose, onApostar, actualizarUsuario }) => {
-  const [monedasApostadas, setMonedasApostadas] = useState(0);
+  const [monedasApostadas, setMonedasApostadas] = useState('');
   const [error, setError] = useState("");
   const token = localStorage.getItem('token');
   const usuarioData = localStorage.getItem('usuario');
   const usuario = usuarioData ? JSON.parse(usuarioData) : null;
 
   const handleApuesta = async (eleccion) => {
+    setError("");
     if (!token) {
       setError("No se ha encontrado token de autenticación. Por favor, inicia sesión nuevamente.");
       return;
@@ -20,17 +21,27 @@ const ApuestaPopup = ({ partido, onClose, onApostar, actualizarUsuario }) => {
       return;
     }
 
-    if (monedasApostadas <= 0) {
-      setError("Debes apostar al menos 1 moneda");
+    const monedas = parseInt(monedasApostadas, 10);
+
+    if (isNaN(monedas) || monedas <= 0) {
+      setError("Debes apostar una cantidad válida y mayor a 0.");
       return;
     }
 
-    if (!Number.isInteger(Number(monedasApostadas))) {
-      setError("La cantidad debe ser un número entero");
+    if (!Number.isInteger(monedas)) {
+      setError("La cantidad debe ser un número entero.");
       return;
     }
 
-    const confirmar = window.confirm(`¿Estás seguro de que quieres apostar ${monedasApostadas} monedas por ${eleccion === 'local' ? partido.equipoLocal : eleccion === 'visitante' ? partido.equipoVisitante : 'empate'}?`);
+    if (monedas > usuario.monedas) {
+      setError(`No tienes suficientes monedas. Tienes ${usuario.monedas} disponibles.`);
+      return;
+    }
+
+    const equipoElegido = eleccion === 'local' ? partido.equipoLocal :
+                         eleccion === 'visitante' ? partido.equipoVisitante : 'empate';
+
+    const confirmar = window.confirm(`¿Estás seguro de que quieres apostar ${monedas} monedas por ${equipoElegido}?`);
     
     if (!confirmar) {
       return;
@@ -41,13 +52,14 @@ const ApuestaPopup = ({ partido, onClose, onApostar, actualizarUsuario }) => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json',
           'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
           usuarioId: usuario._id,
           partidoId: partido._id,
           eleccion,
-          monedasApostadas: parseInt(monedasApostadas)
+          monedasApostadas: monedas
         })
       });
 
@@ -57,7 +69,9 @@ const ApuestaPopup = ({ partido, onClose, onApostar, actualizarUsuario }) => {
         throw new Error(data.message || 'Error al registrar apuesta');
       }
       
+      // Actualizar monedas localmente y en localStorage
       actualizarUsuario(data.monedasRestantes);
+
       onApostar();
       onClose();
     } catch (error) {

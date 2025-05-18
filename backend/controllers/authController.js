@@ -1,99 +1,90 @@
-const Usuario = require('../model/Usuario');
+const Usuario = require('../models/Usuario');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 
+const calcularEdad = (fechaNacimiento) => {
+  const hoy = new Date();
+  const nacimiento = new Date(fechaNacimiento);
+  let edad = hoy.getFullYear() - nacimiento.getFullYear();
+  const mes = hoy.getMonth() - nacimiento.getMonth();
+  if (mes < 0 || (mes === 0 && hoy.getDate() < nacimiento.getDate())) edad--;
+  return edad;
+};
+
 const registrarUsuario = async (req, res) => {
+  const { username, nombre, password, email, nie, fechaNacimiento, emailConfirm, passwordConfirm } = req.body;
+
   try {
-    const { nombre, email, password } = req.body;
+    if (await Usuario.findOne({ username })) return res.status(400).json({ msg: 'Usuario ya existe' });
+    if (email !== emailConfirm) return res.status(400).json({ msg: 'Los emails no coinciden' });
+    if (password !== passwordConfirm) return res.status(400).json({ msg: 'Las contraseñas no coinciden' });
+    if (password.length < 6) return res.status(400).json({ msg: 'La contraseña debe tener al menos 6 caracteres' });
 
-    const usuarioExistente = await Usuario.findOne({ email });
-    if (usuarioExistente) {
-      return res.status(400).json({ message: 'El usuario ya existe' });
-    }
+    const edad = calcularEdad(fechaNacimiento);
+    if (edad < 18) return res.status(400).json({ msg: 'Debes tener al menos 18 años' });
 
-    const salt = await bcrypt.genSalt(10);
-    const passwordEncriptada = await bcrypt.hash(password, salt);
-
-    const nuevoUsuario = new Usuario({ nombre, email, password: passwordEncriptada, monedas: 250 });
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const nuevoUsuario = new Usuario({ username, nombre, password: hashedPassword, email, nie, fechaNacimiento });
     await nuevoUsuario.save();
 
-    const token = jwt.sign(
-      { userId: nuevoUsuario._id, role: nuevoUsuario.role },
-      process.env.JWT_SECRET,
-      { expiresIn: '1h' }
-    );
-
-    return res.status(201).json({
-      message: 'Usuario registrado con éxito',
-      token,
-      nombre: nuevoUsuario.nombre
-    });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: 'Error al registrar el usuario' });
+    return res.status(201).json({ msg: 'Usuario registrado' });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ msg: 'Error en el servidor' });
   }
 };
 
 const loginUsuario = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, username, password } = req.body;
+    const identifier = email || username;
+    const isEmail = identifier.includes('@');
+    const usuario = await Usuario.findOne(isEmail ? { email: identifier } : { username: identifier });
 
-    const usuario = await Usuario.findOne({ email });
-    if (!usuario) {
-      return res.status(400).json({ message: 'Usuario no encontrado' });
-    }
+    if (!usuario) return res.status(400).json({ msg: 'Usuario no encontrado' });
 
-    const esCorrecta = await bcrypt.compare(password, usuario.password);
-    if (!esCorrecta) {
-      return res.status(400).json({ message: 'Contraseña incorrecta' });
-    }
-
-    console.log('Usuario encontrado:', {
-      id: usuario._id,
-      nombre: usuario.nombre,
-      isAdmin: usuario.isAdmin
-    });
+    const valid = await bcrypt.compare(password, usuario.password);
+    if (!valid) return res.status(400).json({ msg: 'Contraseña incorrecta' });
 
     const token = jwt.sign(
-      { 
-        userId: usuario._id,
-        nombre: usuario.nombre,
-        isAdmin: usuario.isAdmin 
-      },
+      { userId: usuario._id, isAdmin: usuario.isAdmin },
       process.env.JWT_SECRET,
       { expiresIn: '2h' }
     );
 
-    return res.status(200).json({
+    res.json({
       token,
       nombre: usuario.nombre,
       isAdmin: usuario.isAdmin,
-      userId: usuario._id,
+      email: usuario.email,
+      username: usuario.username,
       monedas: usuario.monedas
     });
-  } catch (error) {
-    console.error('Error en loginUsuario:', error);
-    return res.status(500).json({ message: 'Error al iniciar sesión' });
+  } catch (err) {
+    console.error('Error en loginUsuario:', err);
+    res.status(500).json({ msg: 'Error en el servidor' });
   }
 };
 
 const verificarToken = async (req, res) => {
+  const { token } = req.body;
+  if (!token) return res.status(400).json({ msg: 'Token no proporcionado' });
+
   try {
-    const { token } = req.body;
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const usuario = await Usuario.findById(decoded.userId);
-    
-    if (!usuario) {
-      return res.status(404).json({ message: 'Usuario no encontrado' });
-    }
-    
-    return res.status(200).json({ 
-      userId: decoded.userId, 
-      isAdmin: usuario.isAdmin 
+    const usuario = await Usuario.findById(decoded.userId).select('isAdmin nombre email monedas');
+    if (!usuario) return res.status(404).json({ msg: 'Usuario no encontrado' });
+
+    res.json({
+      isAdmin: usuario.isAdmin,
+      userId: usuario._id,
+      nombre: usuario.nombre,
+      email: usuario.email,
+      monedas: usuario.monedas
     });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: 'Error al verificar el token' });
+  } catch (err) {
+    console.error('Error en verificación:', err);
+    res.status(401).json({ msg: 'Token inválido' });
   }
 };
 

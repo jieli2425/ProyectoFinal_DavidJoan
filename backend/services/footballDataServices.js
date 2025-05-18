@@ -19,9 +19,15 @@ const obtenerPartidosPorCompeticion = async (nombre, id) => {
       await Partido.deleteMany({ competicion: nombre, estado: 'pendiente' });
       
       for (const match of data.matches) {
+        const homeTeamName = match.homeTeam?.name;
+        const awayTeamName = match.awayTeam?.name;
+
+        // Saltar si falta algún equipo
+        if (!homeTeamName || !awayTeamName) continue;
+
         const existe = await Partido.findOne({
-          equipoLocal: match.homeTeam.name,
-          equipoVisitante: match.awayTeam.name,
+          equipoLocal: homeTeamName,
+          equipoVisitante: awayTeamName,
           fecha: new Date(match.utcDate),
           competicion: match.competition.name
         });
@@ -30,8 +36,8 @@ const obtenerPartidosPorCompeticion = async (nombre, id) => {
           const partido = new Partido({
             deporte: 'futbol',
             competicion: match.competition.name,
-            equipoLocal: match.homeTeam.name,
-            equipoVisitante: match.awayTeam.name,
+            equipoLocal: homeTeamName,
+            equipoVisitante: awayTeamName,
             fecha: new Date(match.utcDate),
             estado: 'pendiente'
           });

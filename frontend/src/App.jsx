@@ -12,6 +12,7 @@ import Politica from './pages/politica';
 import SobreNosotros from './pages/sobrenosotros';
 import Contacto from './pages/contacto';
 import { AuthProvider } from './context/AuthContext';
+import MisApuestas from './pages/MisApuestas';
 // import AdminHome from './components/AdminHome';
 
 
@@ -28,6 +29,7 @@ const App = () => (
         {/* <Route path="/admin" element={<ProtectedAdminRoute><AdminHome /></ProtectedAdminRoute>} /> */}
         <Route path="/puntosTienda" element={<PuntosTienda />} />
         <Route path="/datosCuenta" element={<DatosCuenta />} />
+        <Route path="/mis-apuestas" element={<MisApuestas />} />  
         <Route path="/terminos" element={<Terminos />} />
         <Route path="/politica" element={<Politica />} />
         <Route path="/nosotros" element={<SobreNosotros />} />

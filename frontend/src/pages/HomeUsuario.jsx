@@ -19,7 +19,6 @@ const HomeUsuario = () => {
   const [partidoSeleccionado, setPartidoSeleccionado] = useState(null);
   const usuarioData = localStorage.getItem('usuario');
   const usuario = usuarioData ? JSON.parse(usuarioData) : null;
-  const token = localStorage.getItem('token');
 
   const [monedas, setMonedas] = useState(usuario?.monedas || 0);
 
