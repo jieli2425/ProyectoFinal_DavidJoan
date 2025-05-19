@@ -4,7 +4,7 @@ const Usuario = require('../models/Usuario');
 
 const registrarApuesta = async (req, res) => {
   try {
-    const usuarioId = req.user.userId; // Extraído del token
+    const usuarioId = req.user.userId;
     const { partidoId, eleccion, monedasApostadas } = req.body;
 
     const partido = await Partido.findById(partidoId);
@@ -78,51 +78,6 @@ const obtenerApuestas = async (req, res) => {
     res.status(500).json({ message: 'Error al obtener las apuestas' });
   }
 };
-
-// const resolverApuesta = async (req, res) => {
-//   try {
-//     if (!req.user.esAdmin) {
-//       return res.status(403).json({ message: 'Solo un administrador puede resolver apuestas' });
-//     }
-
-//     const { apuestaId } = req.params;
-//     const apuesta = await Apuesta.findById(apuestaId).populate('partido usuario');
-
-//     if (!apuesta) {
-//       return res.status(404).json({ message: 'Apuesta no encontrada' });
-//     }
-
-//     if (apuesta.resultado !== 'pendiente') {
-//       return res.status(400).json({ message: 'Esta apuesta ya ha sido resuelta' });
-//     }
-
-//     const partido = apuesta.partido;
-//     if (partido.estado !== 'finalizado') {
-//       return res.status(400).json({ message: 'El partido aún no ha finalizado' });
-//     }
-
-//     const esGanadora = apuesta.eleccion === partido.ganador;
-
-//     apuesta.ganadora = esGanadora;
-//     apuesta.resultado = esGanadora ? 'ganada' : 'perdida';
-
-//     if (esGanadora) {
-//       const usuario = apuesta.usuario;
-//       usuario.monedas += apuesta.monto;
-//       await usuario.save();
-//     }
-
-//     await apuesta.save();
-
-//     res.status(200).json({
-//       message: `Apuesta ${esGanadora ? 'ganada' : 'perdida'}`,
-//       apuesta
-//     });
-//   } catch (error) {
-//     console.error('Error al resolver apuesta:', error);
-//     res.status(500).json({ message: 'Error al resolver la apuesta' });
-//   }
-// };
 
 const resolverApuestasFinalizadas = async (req, res) => {
   try {
