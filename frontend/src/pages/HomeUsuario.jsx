@@ -14,7 +14,6 @@ import futbolicono from '../assets/logofutbol.png';
 
 const HomeUsuario = () => {
   const [apuestaOpen, setApuestaOpen] = useState(false);
-  const [partidoSeleccionado, setPartidoSeleccionado] = useState(null);
 
   const [partidos, setPartidos] = useState([]);
   const [partidosPremierLeague, setPartidosPremierLeague] = useState([]);
@@ -23,23 +22,46 @@ const HomeUsuario = () => {
   // Estados para búsqueda
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
+  const [partidoSeleccionado, setPartidoSeleccionado] = useState(null);
+  const usuarioData = localStorage.getItem('usuario');
+  const usuario = usuarioData ? JSON.parse(usuarioData) : null;
 
-  useEffect(() => {
+  const [monedas, setMonedas] = useState(usuario?.monedas || 0);
+
+  const actualizarUsuario = (nuevasMonedas) => {
+    setMonedas(nuevasMonedas);
+    const usuarioActualizado = { ...usuario, monedas: nuevasMonedas };
+    localStorage.setItem('usuario', JSON.stringify(usuarioActualizado));
+  };
+
+  const refrescarApuestas = () => {
+    console.log('Apuestas refrescadas');
     fetch('/api/partidos')
       .then(res => res.json())
       .then(setPartidos);
+  };
 
-    fetch('/api/partidos/premier-league')
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    const headers = {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    };
+
+    fetch('/api/partidos', { headers })
+      .then(res => res.json())
+      .then(setPartidos);
+
+    fetch('/api/partidos/premier-league', { headers })
       .then(res => res.json())
       .then(setPartidosPremierLeague);
 
-    fetch('/api/partidos/champions-league')
+    fetch('/api/partidos/champions-league', { headers })
       .then(res => res.json())
       .then(setPartidosChampionsLeague);
   }, []);
 
   const partidosFutbol = partidos.filter(p => p.deporte === 'futbol');
-  // const partidosBasquet = partidos.filter(p => p.deporte === 'basquet'); // Si lo quieres usar después
 
   const scrollToSection = (sectionId) => {
     document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth' });
@@ -73,6 +95,7 @@ const HomeUsuario = () => {
     <div>
       <Navbar onRegisterClick={() => window.location.href = '/registro'} onSearch={handleSearch} />
 
+      {/* Popup de apuesta */}
       {apuestaOpen && (
         <ApuestaPopup
           partido={partidoSeleccionado}
@@ -80,6 +103,8 @@ const HomeUsuario = () => {
             setApuestaOpen(false);
             setPartidoSeleccionado(null);
           }}
+          onApostar={refrescarApuestas}
+          actualizarUsuario={actualizarUsuario}
         />
       )}
 

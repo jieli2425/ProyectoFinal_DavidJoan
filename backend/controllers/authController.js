@@ -13,102 +13,78 @@ const calcularEdad = (fechaNacimiento) => {
   return edad;
 };
 
+
+
 const registrarUsuario = async (req, res) => {
-  const { username, nombre, password, email, nie, fechaNacimiento, emailConfirm, passwordConfirm } = req.body;
+  const { username, nombre, password, email, nie, fechaNacimiento, emailConfirm, passwordConfirm, isAdmin } = req.body;
 
   try {
-    const existing = await Usuario.findOne({ username });
-    if (existing) return res.status(400).json({ msg: 'Usuario ya existe' });
-
-    if (email !== emailConfirm) {
-      return res.status(400).json({ msg: 'Los emails no coinciden' });
-    }
-
-    if (password !== passwordConfirm) {
-      return res.status(400).json({ msg: 'Las contraseñas no coinciden' });
-    }
-
-    if (password.length < 6) {
-      return res.status(400).json({ msg: 'La contraseña debe tener al menos 6 caracteres' });
-    }
+    if (await Usuario.findOne({ username })) return res.status(400).json({ msg: 'Usuario ya existe' });
+    if (email !== emailConfirm) return res.status(400).json({ msg: 'Los emails no coinciden' });
+    if (password !== passwordConfirm) return res.status(400).json({ msg: 'Las contraseñas no coinciden' });
+    if (password.length < 6) return res.status(400).json({ msg: 'La contraseña debe tener al menos 6 caracteres' });
 
     const edad = calcularEdad(fechaNacimiento);
-    if (edad < 18) {
-      return res.status(400).json({ msg: 'Debes tener al menos 18 años' });
-    }
+    if (edad < 18) return res.status(400).json({ msg: 'Debes tener al menos 18 años' });
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = new Usuario({ username, nombre, password: hashedPassword, email, nie, fechaNacimiento });
-    await user.save();
+    const nuevoUsuario = new Usuario({ username, nombre, password: hashedPassword, email, nie, fechaNacimiento, isAdmin: !!isAdmin });
+    await nuevoUsuario.save();
 
-    res.status(201).json({ msg: 'Usuario registrado' });
+    return res.status(201).json({ msg: 'Usuario registrado' });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ msg: 'Error en el servidor' });
+    return res.status(500).json({ msg: 'Error en el servidor' });
   }
 };
 
 const loginUsuario = async (req, res) => {
   try {
     const { email, username, password } = req.body;
-
     const identifier = email || username;
     const isEmail = identifier.includes('@');
+    const usuario = await Usuario.findOne(isEmail ? { email: identifier } : { username: identifier });
 
-    const user = await Usuario.findOne(isEmail ? { email: identifier } : { username: identifier });
+    if (!usuario) return res.status(400).json({ msg: 'Usuario no encontrado' });
 
-    if (!user) {
-      return res.status(400).json({ msg: 'Usuario no encontrado' });
-    }
-
-    const valid = await bcrypt.compare(password, user.password);
-    if (!valid) {
-      return res.status(400).json({ msg: 'Contraseña incorrecta' });
-    }
+    const valid = await bcrypt.compare(password, usuario.password);
+    if (!valid) return res.status(400).json({ msg: 'Contraseña incorrecta' });
 
     const token = jwt.sign(
-      { userId: user._id, isAdmin: user.isAdmin },
+      { userId: usuario._id, isAdmin: usuario.isAdmin },
       process.env.JWT_SECRET,
       { expiresIn: '2h' }
     );
 
     res.json({
       token,
-      nombre: user.nombre,
-      isAdmin: user.isAdmin,
-      email: user.email,
-      username: user.username,
-      monedas: user.monedas
+      nombre: usuario.nombre,
+      isAdmin: usuario.isAdmin,
+      email: usuario.email,
+      username: usuario.username,
+      monedas: usuario.monedas
     });
-
   } catch (err) {
-    console.error('Error en login:', err);
+    console.error('Error en loginUsuario:', err);
     res.status(500).json({ msg: 'Error en el servidor' });
   }
 };
 
 const verificarToken = async (req, res) => {
   const { token } = req.body;
-
-  if (!token) {
-    return res.status(400).json({ msg: 'Token no proporcionado' });
-  }
+  if (!token) return res.status(400).json({ msg: 'Token no proporcionado' });
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await Usuario.findById(decoded.userId)
-      .select('isAdmin nombre email monedas');
-
-    if (!user) {
-      return res.status(404).json({ msg: 'Usuario no encontrado' });
-    }
+    const usuario = await Usuario.findById(decoded.userId).select('isAdmin nombre email monedas');
+    if (!usuario) return res.status(404).json({ msg: 'Usuario no encontrado' });
 
     res.json({
-      isAdmin: user.isAdmin,
-      userId: user._id,
-      nombre: user.nombre,
-      email: user.email,
-      monedas: user.monedas
+      isAdmin: usuario.isAdmin,
+      userId: usuario._id,
+      nombre: usuario.nombre,
+      email: usuario.email,
+      monedas: usuario.monedas
     });
   } catch (err) {
     console.error('Error en verificación:', err);

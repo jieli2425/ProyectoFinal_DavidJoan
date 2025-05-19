@@ -14,52 +14,41 @@ const LoginPopup = ({ onClose }) => {
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
-    e.preventDefault();
-    setError('');
+  e.preventDefault();
+  setError('');
 
-    try {
-      const res = await fetch(`${API_URL}/api/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: identifier.includes('@') ? identifier : undefined,
-          username: identifier.includes('@') ? undefined : identifier,
-          password
-        })
-      });
+  try {
+    const res = await fetch(`${API_URL}/api/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: identifier.includes('@') ? identifier : undefined,
+        username: identifier.includes('@') ? undefined : identifier,
+        password
+      })
+    });
 
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.msg || 'Error al iniciar sesión');
-      }
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.msg || 'Error al iniciar sesión');
 
-      if (data.token) {
-        console.log('Login exitoso:', {
-          nombre: data.nombre,
-          isAdmin: data.isAdmin,
-          token: data.token
-        });
+    const usuarioData = {
+      _id: data._id,
+      nombre: data.nombre,
+      isAdmin: data.isAdmin,
+      monedas: data.monedas || 0
+    };
+    
+    localStorage.setItem('usuario', JSON.stringify(usuarioData));
 
-        // Primero cerramos el popup
-        onClose(true);
+    login(data.token, usuarioData); // Llamada correcta
+    onClose(true); // Cierra el popup
 
-        // Luego hacemos login
-        await login(data.token, data.nombre, data.isAdmin);
-
-        // Finalmente redirigimos
-        if (data.isAdmin) {
-          console.log('Redirigiendo a panel de administración...');
-          navigate('/admin');
-        } else {
-          console.log('Redirigiendo a panel de usuario...');
-          navigate('/usuario');
-        }
-      }
-    } catch (error) {
-      console.error('Error durante el login:', error);
-      setError(error.message || 'Error al intentar iniciar sesión');
-    }
-  };
+    navigate(data.isAdmin ? '/panelAdmin' : '/usuario');
+  } catch (err) {
+    console.error(err);
+    setError(err.message);
+  }
+};
 
   const handleClosePopup = (e) => {
     if (e.target.classList.contains('login-popup-container')) {

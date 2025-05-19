@@ -39,7 +39,6 @@ const Home = () => {
   }, []);
 
   const partidosFutbol = partidos.filter(p => p.deporte === 'futbol');
-  const partidosBasquet = partidos.filter(p => p.deporte === 'basquet');
 
   // Función para manejar búsqueda desde Navbar
   const handleSearch = async (query) => {

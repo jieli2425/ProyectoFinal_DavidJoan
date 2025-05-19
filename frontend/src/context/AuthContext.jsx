@@ -98,7 +98,7 @@ export const AuthProvider = ({ children }) => {
   const login = (token, nombre, isAdmin) => {
     localStorage.setItem('token', token);
     localStorage.setItem('nombre', nombre);
-    localStorage.setItem('isAdmin', isAdmin);
+    localStorage.setItem('isAdmin', isAdmin ? 'true' : 'false');
     setIsAuthenticated(true);
     setNombre(nombre);
     setIsAdmin(isAdmin);
@@ -106,7 +106,7 @@ export const AuthProvider = ({ children }) => {
     fetch(`${API_URL}/api/usuarios/perfil`, {
       method: 'GET',
       headers: {
-        Authorization: `Bearer ${token}`,
+        'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
     })
@@ -117,7 +117,12 @@ export const AuthProvider = ({ children }) => {
         return response.json();
       })
       .then(data => {
-        setMonedas(data.monedas || 0);
+        if (data.monedas) {
+          setMonedas(data.monedas);
+        }
+        if (data._id) {
+        localStorage.setItem('usuario', JSON.stringify(data));
+      }
       })
       .catch(error => console.error('Error obteniendo el perfil:', error));
   };
@@ -126,10 +131,12 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('token');
     localStorage.removeItem('nombre');
     localStorage.removeItem('isAdmin');
+    localStorage.removeItem('registrado');
     setIsAuthenticated(false);
     setNombre('');
     setMonedas(0);
     setIsAdmin(false);
+    setRegistrado(false);
   };
 
   const registro = (token, nombre) => {

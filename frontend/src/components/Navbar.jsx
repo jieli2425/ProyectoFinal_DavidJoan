@@ -4,7 +4,7 @@ import '../../css/navbar.css';
 import logoJOLIblanco from '../assets/LogoJOLIBlanco.png';
 import { AuthContext } from '../context/AuthContext';
 import MonedaIcon from '../assets/monedaoronav.png';
-import { Search, User, Menu, X } from 'lucide-react';
+import { Search, User } from 'lucide-react';
 
 const Navbar = ({ onLoginClick, onRegisterClick, onSearch }) => {
   const navigate = useNavigate();
@@ -75,6 +75,7 @@ const Navbar = ({ onLoginClick, onRegisterClick, onSearch }) => {
                     <ul className="menu-dropdown">
                       <li className="menu-item" onClick={() => { navigate('/datosCuenta'); setMenuOpen(false); }}>Mi Cuenta</li>
                       <li className="menu-item" onClick={() => { handlePuntosTienda(); setMenuOpen(false); }}>Tienda de puntos</li>
+                      <li className="menu-item" onClick={() => { navigate('/mis-apuestas'); setMenuOpen(false); }}>Mis Apuestas</li>
                       <li className="menu-item logout" onClick={() => { handleLogout(); setMenuOpen(false); }}>Cerrar sesión</li>
                     </ul>
                   )}
@@ -82,13 +83,7 @@ const Navbar = ({ onLoginClick, onRegisterClick, onSearch }) => {
               </>
             )
           )}
-
         </div>
-
-        {/* Botón hamburguesa para móvil */}
-        <button className="hamburger-btn" onClick={toggleMobileMenu} aria-label="Abrir menú móvil">
-          {isMobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
-        </button>
       </div>
 
       {/* Menú colapsable móvil */}

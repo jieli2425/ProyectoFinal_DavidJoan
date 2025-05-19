@@ -16,6 +16,9 @@ import PreguntarEmail from './pages/preguntaremail';
 import ProtectedRoute from './components/ProtectedRoute';
 // import AdminHome from './components/AdminHome';
 // import ProtectedAdminRoute from './components/ProtectedAdminRoute';
+import MisApuestas from './pages/MisApuestas';
+import PanelAdmin from './pages/AdminHome';
+
 
 const App = () => (
   <AuthProvider>
@@ -48,6 +51,22 @@ const App = () => (
           element={
             <ProtectedRoute>
               <DatosCuenta />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/mis-apuestas"
+          element={
+            <ProtectedRoute>
+              <MisApuestas />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/panelAdmin"
+          element={
+            <ProtectedRoute>
+              <PanelAdmin />
             </ProtectedRoute>
           }
         />

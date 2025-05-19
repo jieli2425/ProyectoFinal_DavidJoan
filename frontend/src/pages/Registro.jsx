@@ -15,6 +15,7 @@ const Registro = () => {
   const [nie, setNie] = useState('');
   const [fechaNacimiento, setFechaNacimiento] = useState('');
   const [edadError, setEdadError] = useState('');
+  const [isAdmin, setIsAdmin] = useState(true);
 
   const validarEdad = (fecha) => {
     const hoy = new Date();
@@ -55,7 +56,8 @@ const Registro = () => {
         password,
         passwordConfirm,
         nie,
-        fechaNacimiento
+        fechaNacimiento,
+        isAdmin
       })
     });
 
@@ -87,6 +89,11 @@ const Registro = () => {
 
         <input type="password" className="registro-input" placeholder="Contraseña" value={password} onChange={e => setPassword(e.target.value)} />
         <input type="password" className="registro-input" placeholder="Confirmar Contraseña" value={passwordConfirm} onChange={e => setPasswordConfirm(e.target.value)} />
+
+        <label>
+          <input type="checkbox" checked={isAdmin} onChange={e => setIsAdmin(e.target.checked)} />
+          ¿Registrar como administrador?
+        </label>
 
         <button className="registro-button" onClick={handleRegister}>Crear Cuenta</button>
       </div>
