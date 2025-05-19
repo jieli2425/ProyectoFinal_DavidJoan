@@ -13,8 +13,6 @@ const calcularEdad = (fechaNacimiento) => {
   return edad;
 };
 
-
-
 const registrarUsuario = async (req, res) => {
   const { username, nombre, password, email, nie, fechaNacimiento, emailConfirm, passwordConfirm, isAdmin } = req.body;
 
