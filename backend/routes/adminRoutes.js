@@ -30,31 +30,31 @@ router.delete('/usuarios/:userId', verificarToken, verificarAdmin, async (req, r
   }
 });
 
-// Obtener todas las apuestas
 router.get('/apuestas', verificarToken, verificarAdmin, async (req, res) => {
   try {
     const apuestas = await Apuesta.find()
-      .populate('usuario', 'nombre email')
-      .populate('partido', 'equipoLocal equipoVisitante');
-    
+      .populate('usuario', 'nombre')
+      .populate('partido', 'equipoLocal equipoVisitante')
+      .sort({ fecha: -1 });
+
+    // Formatear respuesta para que React reciba datos que espera
     const apuestasFormateadas = apuestas.map(a => ({
       _id: a._id,
-      usuarioNombre: a.usuario.nombre,
-      equipoLocal: a.partido.equipoLocal.nombre,
-      equipoVisitante: a.partido.equipoVisitante.nombre,
+      usuarioNombre: a.usuario?.nombre || 'Desconocido',
+      equipoLocal: a.partido?.equipoLocal || 'N/A',
+      equipoVisitante: a.partido?.equipoVisitante || 'N/A',
       resultadoApostado: a.eleccion,
       monedas: a.monedasApostadas,
       estado: a.resultado
     }));
 
-    res.json(apuestasFormateadas);
+    res.status(200).json(apuestasFormateadas);
   } catch (error) {
     console.error('Error al obtener apuestas:', error);
-    res.status(500).json({ message: 'Error al obtener la lista de apuestas' });
+    res.status(500).json({ message: 'Error al obtener las apuestas' });
   }
 });
 
-// Modificar monedas de un usuario
 router.put('/usuarios/:userId/monedas', verificarToken, verificarAdmin, async (req, res) => {
   try {
     const { monedas } = req.body;
