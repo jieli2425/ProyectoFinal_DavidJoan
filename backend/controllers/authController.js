@@ -12,7 +12,7 @@ const calcularEdad = (fechaNacimiento) => {
 };
 
 const registrarUsuario = async (req, res) => {
-  const { username, nombre, password, email, nie, fechaNacimiento, emailConfirm, passwordConfirm } = req.body;
+  const { username, nombre, password, email, nie, fechaNacimiento, emailConfirm, passwordConfirm, isAdmin } = req.body;
 
   try {
     if (await Usuario.findOne({ username })) return res.status(400).json({ msg: 'Usuario ya existe' });
@@ -24,7 +24,7 @@ const registrarUsuario = async (req, res) => {
     if (edad < 18) return res.status(400).json({ msg: 'Debes tener al menos 18 años' });
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const nuevoUsuario = new Usuario({ username, nombre, password: hashedPassword, email, nie, fechaNacimiento });
+    const nuevoUsuario = new Usuario({ username, nombre, password: hashedPassword, email, nie, fechaNacimiento, isAdmin: !!isAdmin });
     await nuevoUsuario.save();
 
     return res.status(201).json({ msg: 'Usuario registrado' });

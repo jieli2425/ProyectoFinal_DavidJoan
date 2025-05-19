@@ -43,7 +43,7 @@ const LoginPopup = ({ onClose }) => {
     login(data.token, usuarioData); // Llamada correcta
     onClose(true); // Cierra el popup
 
-    navigate(data.isAdmin ? '/admin' : '/usuario');
+    navigate(data.isAdmin ? '/panelAdmin' : '/usuario');
   } catch (err) {
     console.error(err);
     setError(err.message);

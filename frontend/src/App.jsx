@@ -13,10 +13,8 @@ import SobreNosotros from './pages/sobrenosotros';
 import Contacto from './pages/contacto';
 import { AuthProvider } from './context/AuthContext';
 import MisApuestas from './pages/MisApuestas';
-// import AdminHome from './components/AdminHome';
+import PanelAdmin from './pages/AdminHome';
 
-
-// import ProtectedAdminRoute from './components/ProtectedAdminRoute';
 
 const App = () => (
   <AuthProvider>
@@ -26,7 +24,7 @@ const App = () => (
         <Route path="/registro" element={<Registro />} />
         <Route path="/futbol" element={<Futbol />} />
         <Route path="/usuario" element={<HomeUsuario />} />
-        {/* <Route path="/admin" element={<ProtectedAdminRoute><AdminHome /></ProtectedAdminRoute>} /> */}
+        <Route path="/panelAdmin" element={<PanelAdmin />} />
         <Route path="/puntosTienda" element={<PuntosTienda />} />
         <Route path="/datosCuenta" element={<DatosCuenta />} />
         <Route path="/mis-apuestas" element={<MisApuestas />} />  
