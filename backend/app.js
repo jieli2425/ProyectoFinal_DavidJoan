@@ -10,6 +10,7 @@ const partidosRoutes = require('./routes/partidosRoutes');
 const usuariosRoutes = require('./routes/usuariosRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const footballDataServices = require('./services/footballDataServices');
+const actualizarPartidos = require('./services/actualizarPartidosApuestas');
 
 dotenv.config();
 
@@ -28,12 +29,14 @@ app.use('/api/partidos', partidosRoutes);
 app.use('/api/usuarios', usuariosRoutes);
 app.use('/api/admin', adminRoutes);
 
-// setInterval(() => {
-//   footballDataServices.obtenerPartidosEnVivo();
-// }, 5 * 60 * 1000);
-
 setInterval(() => {
   footballDataServices.actualizarPartidos();
+}, 1 * 60 * 1000);
+
+setInterval(() => {
+  actualizarPartidos.actualizarResultadosApuestas()
+    .then(() => console.log('Resultados actualizados'))
+    .catch(console.error);
 }, 1 * 60 * 1000);
 
 app.use((err, req, res, next) => {

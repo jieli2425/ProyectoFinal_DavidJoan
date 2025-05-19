@@ -8,31 +8,66 @@ const MisApuestas = () => {
   const token = localStorage.getItem('token');
   const usuario = JSON.parse(localStorage.getItem('usuario'));
 
+  // useEffect(() => {
+  //   const fetchApuestas = async () => {
+  //     try {
+  //       const res = await fetch(`/api/apuestas/usuario/${usuario._id}`, {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`
+  //         }
+  //       });
+
+  //       if (!res.ok) throw new Error('Error al obtener apuestas');
+  //       const data = await res.json();
+  //       setApuestas(data);
+  //     } catch (error) {
+  //       console.error(error);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   if (usuario && usuario._id) {
+  //     fetchApuestas();
+  //   } else {
+  //     setLoading(false);
+  //   }
+  // }, [usuario]);
+
   useEffect(() => {
-    const fetchApuestas = async () => {
-      try {
-        const res = await fetch(`/api/apuestas/usuario/${usuario._id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        });
+  const fetchApuestas = async () => {
+    try {
+      await fetch('/api/apuestas/resolver-finalizadas', {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
 
-        if (!res.ok) throw new Error('Error al obtener apuestas');
-        const data = await res.json();
-        setApuestas(data);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    };
+      const res = await fetch(`/api/apuestas/usuario/${usuario._id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
 
-    if (usuario && usuario._id) {
-      fetchApuestas();
-    } else {
+      if (!res.ok) throw new Error('Error al obtener apuestas');
+      const data = await res.json();
+      setApuestas(data);
+    } catch (error) {
+      console.error(error);
+    } finally {
       setLoading(false);
     }
-  }, [usuario]);
+  };
+
+  if (usuario && usuario._id) {
+    fetchApuestas();
+    const interval = setInterval(fetchApuestas, 30000); // cada 30 segundos
+    return () => clearInterval(interval);
+  } else {
+    setLoading(false);
+  }
+}, [usuario?._id]);
 
   return (
     <>
@@ -61,7 +96,7 @@ const MisApuestas = () => {
                   <p><strong>Fecha:</strong> {new Date(apuesta.partido?.fecha).toLocaleString()}</p>
                   <p><strong>Elección:</strong> {apuesta.eleccion}</p>
                   <p><strong>Monedas apostadas:</strong> {apuesta.monedasApostadas}</p>
-                  <p><strong>Resultado:</strong> {apuesta.resuelta ? (apuesta.ganada ? 'Ganada' : 'Perdida') : 'Pendiente'}</p>
+                  <p><strong>Resultado:</strong> {apuesta.resultado === 'pendiente' ? 'Pendiente' : apuesta.resultado === 'ganada' ? 'Ganada' : 'Perdida'}</p>
                 </li>
               ))}
             </ul>

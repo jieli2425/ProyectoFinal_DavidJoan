@@ -79,53 +79,88 @@ const obtenerApuestas = async (req, res) => {
   }
 };
 
-const resolverApuesta = async (req, res) => {
+// const resolverApuesta = async (req, res) => {
+//   try {
+//     if (!req.user.esAdmin) {
+//       return res.status(403).json({ message: 'Solo un administrador puede resolver apuestas' });
+//     }
+
+//     const { apuestaId } = req.params;
+//     const apuesta = await Apuesta.findById(apuestaId).populate('partido usuario');
+
+//     if (!apuesta) {
+//       return res.status(404).json({ message: 'Apuesta no encontrada' });
+//     }
+
+//     if (apuesta.resultado !== 'pendiente') {
+//       return res.status(400).json({ message: 'Esta apuesta ya ha sido resuelta' });
+//     }
+
+//     const partido = apuesta.partido;
+//     if (partido.estado !== 'finalizado') {
+//       return res.status(400).json({ message: 'El partido aún no ha finalizado' });
+//     }
+
+//     const esGanadora = apuesta.eleccion === partido.ganador;
+
+//     apuesta.ganadora = esGanadora;
+//     apuesta.resultado = esGanadora ? 'ganada' : 'perdida';
+
+//     if (esGanadora) {
+//       const usuario = apuesta.usuario;
+//       usuario.monedas += apuesta.monto;
+//       await usuario.save();
+//     }
+
+//     await apuesta.save();
+
+//     res.status(200).json({
+//       message: `Apuesta ${esGanadora ? 'ganada' : 'perdida'}`,
+//       apuesta
+//     });
+//   } catch (error) {
+//     console.error('Error al resolver apuesta:', error);
+//     res.status(500).json({ message: 'Error al resolver la apuesta' });
+//   }
+// };
+
+const resolverApuestasFinalizadas = async (req, res) => {
   try {
-    if (!req.user.esAdmin) {
-      return res.status(403).json({ message: 'Solo un administrador puede resolver apuestas' });
+    const apuestasPendientes = await Apuesta.find({ resultado: 'pendiente' }).populate('partido usuario');
+
+    const apuestasFinalizadas = apuestasPendientes.filter(a => a.partido.estado === 'finalizado');
+
+    const resultados = [];
+
+    for (const apuesta of apuestasFinalizadas) {
+      const esGanadora = apuesta.eleccion === apuesta.partido.ganador;
+      apuesta.ganadora = esGanadora;
+      apuesta.resultado = esGanadora ? 'ganada' : 'perdida';
+
+      if (esGanadora) {
+        const usuario = await Usuario.findById(apuesta.usuario._id);
+        usuario.monedas += apuesta.monto;
+        await usuario.save();
+      }
+
+      await apuesta.save();
+
+      resultados.push({
+        apuestaId: apuesta._id,
+        resultado: apuesta.resultado,
+        ganadora: apuesta.ganadora,
+      });
     }
 
-    const { apuestaId } = req.params;
-    const apuesta = await Apuesta.findById(apuestaId).populate('partido usuario');
-
-    if (!apuesta) {
-      return res.status(404).json({ message: 'Apuesta no encontrada' });
-    }
-
-    if (apuesta.resultado !== 'pendiente') {
-      return res.status(400).json({ message: 'Esta apuesta ya ha sido resuelta' });
-    }
-
-    const partido = apuesta.partido;
-    if (partido.estado !== 'finalizado') {
-      return res.status(400).json({ message: 'El partido aún no ha finalizado' });
-    }
-
-    const esGanadora = apuesta.eleccion === partido.ganador;
-
-    apuesta.ganadora = esGanadora;
-    apuesta.resultado = esGanadora ? 'ganada' : 'perdida';
-
-    if (esGanadora) {
-      const usuario = apuesta.usuario;
-      usuario.monedas += apuesta.monto;
-      await usuario.save();
-    }
-
-    await apuesta.save();
-
-    res.status(200).json({
-      message: `Apuesta ${esGanadora ? 'ganada' : 'perdida'}`,
-      apuesta
-    });
+    res.status(200).json({ message: 'Apuestas resueltas', resultados });
   } catch (error) {
-    console.error('Error al resolver apuesta:', error);
-    res.status(500).json({ message: 'Error al resolver la apuesta' });
+    console.error('Error al resolver apuestas:', error);
+    res.status(500).json({ message: 'Error al resolver apuestas finalizadas' });
   }
 };
 
 module.exports = { 
   registrarApuesta, 
   obtenerApuestas,
-  resolverApuesta
+  resolverApuestasFinalizadas
 };
