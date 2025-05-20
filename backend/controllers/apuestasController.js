@@ -21,8 +21,8 @@ const registrarApuesta = async (req, res) => {
 
         setTimeout(async () => {
           await Partido.findByIdAndUpdate(partidoId, { estado: 'finalizado' });
-          console.log(`Partido ${partidoId} volvió a estado finalizado tras 30 segundos`);
-        }, 30000);
+          console.log(`Partido ${partidoId} volvió a estado finalizado tras 5 segundos`);
+        }, 5000);
       } else {
         // Si no está pendiente ni finalizado (por ejemplo 'en_curso'), no se permite apostar
         return res.status(400).json({ message: 'No se pueden realizar apuestas en este partido' });

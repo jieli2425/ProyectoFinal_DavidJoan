@@ -29,7 +29,11 @@ const LoginPopup = ({ onClose }) => {
     });
 
     const data = await res.json();
-    if (!res.ok) throw new Error(data.msg || 'Error al iniciar sesión');
+    if (!res.ok) {
+      const errorMessage = data.msg || 'Error al iniciar sesión';
+      alert(errorMessage);
+      throw new Error(errorMessage);
+    }
 
     const usuarioData = {
       _id: data._id,
@@ -40,8 +44,8 @@ const LoginPopup = ({ onClose }) => {
     
     localStorage.setItem('usuario', JSON.stringify(usuarioData));
 
-    login(data.token, usuarioData); // Llamada correcta
-    onClose(true); // Cierra el popup
+    login(data.token, usuarioData);
+    onClose(true);
 
     navigate(data.isAdmin ? '/panelAdmin' : '/usuario');
   } catch (err) {

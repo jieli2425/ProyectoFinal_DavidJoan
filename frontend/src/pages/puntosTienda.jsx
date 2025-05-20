@@ -3,7 +3,7 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import MonedaIcon from '../assets/monedaoronav.png';
 import '../../css/puntosTienda.css';
-import { AuthContext } from '../context/AuthContext'; // AÑADIDO
+import { AuthContext } from '../context/AuthContext';
 
 function parseJwt(token) {
   try {
@@ -20,7 +20,7 @@ const PuntosTienda = () => {
   const [canjeados, setCanjeados] = useState([]);
   const [userId, setUserId] = useState(null);
   const [token, setToken] = useState(null);
-  const { setMonedas } = useContext(AuthContext); // AÑADIDO
+  const { setMonedas } = useContext(AuthContext);
 
   const packs = [
     { id: 1, puntos: 1000 },
@@ -57,10 +57,10 @@ const PuntosTienda = () => {
         });
 
         if (response.ok) {
-          const data = await response.json(); // <- Espera nuevas monedas
+          const data = await response.json();
           setCanjeados([...canjeados, id]);
           if (data.nuevasMonedas !== undefined) {
-            setMonedas(data.nuevasMonedas); // ACTUALIZA monedas globalmente
+            setMonedas(data.nuevasMonedas);
           }
         } else {
           console.error('Error al actualizar los puntos');

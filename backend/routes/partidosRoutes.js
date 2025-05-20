@@ -22,16 +22,6 @@ const admin = (req, res, next) => {
   next();
 };
 
-// router.post('/', auth, admin, async (req, res) => {
-//   try {
-//     const partido = new Partido(req.body);
-//     await partido.save();
-//     res.status(201).json(partido);
-//   } catch {
-//     res.status(500).json({ msg: 'Error al crear partido' });
-//   }
-// });
-
 router.get('/', async (req, res) => {
   try {
     const { deporte, estado, fechaInicio, fechaFin, page = 1, limit = 10 } = req.query;
@@ -106,7 +96,7 @@ router.get('/search', async (req, res) => {
         { equipoLocal: regex },
         { equipoVisitante: regex }
       ],
-      estado: 'pendiente'
+      estado: 'finalizado'
     }).limit(10);
 
     res.json(partidos);

@@ -61,7 +61,6 @@ export const AuthProvider = ({ children }) => {
             setMonedas(dataPerfil.monedas || 0);
 
           } else {
-            // No hagas logout automático, solo limpia estado localmente
             if (!isMounted.current) return;
             setIsAuthenticated(false);
             setNombre('');
@@ -70,7 +69,6 @@ export const AuthProvider = ({ children }) => {
           }
         } catch (error) {
           console.error('Error en la verificación:', error);
-          // No llamar logout automático para evitar deslogueos no deseados
           if (!isMounted.current) return;
           setIsAuthenticated(false);
           setNombre('');
@@ -157,6 +155,7 @@ export const AuthProvider = ({ children }) => {
         monedas,
         isAdmin,
         loading,
+        setMonedas
       }}
     >
       {children}
