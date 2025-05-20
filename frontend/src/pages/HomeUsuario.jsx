@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom'; // Para navegar si quieres usarlo (opcional)
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import ApuestaPopup from '../components/ApuestaPopup';
@@ -41,6 +40,29 @@ const HomeUsuario = () => {
       .then(setPartidos);
   };
 
+const fechaInicioPremier = new Date('2025-05-12T17:00:00.000+00:00');
+const fechaFinPremier = new Date('2025-05-20T17:00:00.000+00:00');
+const fechaInicioChampions = new Date('2025-05-06T19:00:00.000+00:00');
+const fechaFinChampions = new Date('2025-05-31T19:00:00.000+00:00');
+
+const partidosPremierFiltrados = partidosPremierLeague.filter(p => {
+  const fecha = new Date(p.fecha);
+  return (
+    p.competicion === 'Premier League' &&
+    fecha >= fechaInicioPremier &&
+    fecha <= fechaFinPremier
+  );
+});
+
+const partidosChampionsFiltrados = partidosChampionsLeague.filter(p => {
+  const fecha = new Date(p.fecha);
+  return (
+    (p.competicion === 'UEFA Champions League' || p.competicion === 'Champions League') &&
+    fecha >= fechaInicioChampions &&
+    fecha <= fechaFinChampions
+  );
+});
+
   useEffect(() => {
     const token = localStorage.getItem('token');
     const headers = {
@@ -72,7 +94,6 @@ const HomeUsuario = () => {
     setApuestaOpen(true);
   };
 
-  // Función para buscar partidos
   const handleSearch = async (query) => {
     setSearchQuery(query);
     if (!query) {
@@ -185,7 +206,7 @@ const HomeUsuario = () => {
                 Premier League
                 <img src={premierleague} alt="Logo Premier" style={{ height: '24px', marginLeft: '10px' }} />
               </h2>
-              {partidosPremierLeague.map(p => (
+              {partidosPremierFiltrados.map(p => (
                 <div key={p._id} className="partido-card">
                   <span className="partido-equipos">{p.equipoLocal} vs {p.equipoVisitante}</span>
                   <input
@@ -209,7 +230,7 @@ const HomeUsuario = () => {
                 Champions League
                 <img src={championsleague} alt="Logo Champions" style={{ height: '24px', marginLeft: '10px' }} />
               </h2>
-              {partidosChampionsLeague.map(p => (
+              {partidosChampionsFiltrados.map(p => (
                 <div key={p._id} className="partido-card">
                   <span className="partido-equipos">{p.equipoLocal} vs {p.equipoVisitante}</span>
                   <input

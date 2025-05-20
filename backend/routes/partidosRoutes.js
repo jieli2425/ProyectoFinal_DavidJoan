@@ -34,11 +34,16 @@ const admin = (req, res, next) => {
 
 router.get('/', async (req, res) => {
   try {
-    const { deporte, estado, page = 1, limit = 10 } = req.query;
+    const { deporte, estado, fechaInicio, fechaFin, page = 1, limit = 10 } = req.query;
     const filter = {};
 
     if (deporte) filter.deporte = deporte;
     if (estado) filter.estado = estado;
+    if (fechaInicio || fechaFin) {
+      filter.fecha = {};
+      if (fechaInicio) filter.fecha.$gte = new Date(fechaInicio);
+      if (fechaFin) filter.fecha.$lte = new Date(fechaFin);
+    }
 
     const partidos = await Partido.find(filter)
       .skip((page - 1) * limit)
