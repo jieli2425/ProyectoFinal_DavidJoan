@@ -4,7 +4,6 @@ const { verificarToken, verificarAdmin } = require('../middlewares/auth');
 const Usuario = require('../models/Usuario');
 const Apuesta = require('../models/Apuesta');
 
-// Obtener todos los usuarios
 router.get('/usuarios', verificarToken, verificarAdmin, async (req, res) => {
   try {
     const usuarios = await Usuario.find().select('-password');
@@ -15,7 +14,6 @@ router.get('/usuarios', verificarToken, verificarAdmin, async (req, res) => {
   }
 });
 
-// Eliminar un usuario
 router.delete('/usuarios/:userId', verificarToken, verificarAdmin, async (req, res) => {
   try {
     const usuario = await Usuario.findById(req.params.userId);
@@ -37,7 +35,6 @@ router.get('/apuestas', verificarToken, verificarAdmin, async (req, res) => {
       .populate('partido', 'equipoLocal equipoVisitante')
       .sort({ fecha: -1 });
 
-    // Formatear respuesta para que React reciba datos que espera
     const apuestasFormateadas = apuestas.map(a => ({
       _id: a._id,
       usuarioNombre: a.usuario?.nombre || 'Desconocido',

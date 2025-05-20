@@ -16,7 +16,6 @@ const auth = (req, res, next) => {
   }
 };
 
-// Middleware para admin
 const admin = (req, res, next) => {
   if (!req.user.isAdmin) return res.status(403).json({ msg: 'Acceso solo para administradores' });
   next();
@@ -83,13 +82,13 @@ router.get('/champions-league', async (req, res) => {
     res.status(500).json({ msg: 'Error al obtener partidos de la Champions League' });
   }
 });
-// GET /api/partidos/search?q=textoBusqueda
+
 router.get('/search', async (req, res) => {
   const { q } = req.query;
   if (!q) return res.status(400).json({ msg: 'Falta parámetro de búsqueda' });
 
   try {
-    const regex = new RegExp(q, 'i'); // búsqueda case-insensitive
+    const regex = new RegExp(q, 'i');
     const partidos = await Partido.find({
       $or: [
         { competicion: regex },

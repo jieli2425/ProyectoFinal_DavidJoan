@@ -50,7 +50,6 @@ router.put('/:id/sumar-monedas', auth, async (req, res) => {
   const { id } = req.params;
   const { puntos } = req.body;
 
-  // Verifica que el usuario autenticado sea el mismo que intenta modificar
   if (req.user.userId !== id) {
     return res.status(403).json({ msg: 'No tienes permiso para modificar este usuario' });
   }

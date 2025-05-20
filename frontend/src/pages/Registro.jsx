@@ -65,7 +65,7 @@ const Registro = () => {
 
     if (res.ok) {
       alert('Cuenta creada correctamente');
-      navigate('/');  // Redirige a la página de inicio después de registrarse
+      navigate('/');
     } else {
       alert(data.msg || data.message);
     }

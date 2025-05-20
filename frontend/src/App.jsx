@@ -14,8 +14,6 @@ import Contacto from './pages/contacto';
 import { AuthProvider } from './context/AuthContext';
 import PreguntarEmail from './pages/preguntaremail';
 import ProtectedRoute from './components/ProtectedRoute';
-// import AdminHome from './components/AdminHome';
-// import ProtectedAdminRoute from './components/ProtectedAdminRoute';
 import MisApuestas from './pages/MisApuestas';
 import PanelAdmin from './pages/AdminHome';
 

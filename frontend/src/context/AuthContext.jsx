@@ -12,7 +12,7 @@ export const AuthProvider = ({ children }) => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const isMounted = useRef(true); // Para evitar setState si componente desmontado
+  const isMounted = useRef(true);
 
   useEffect(() => {
     isMounted.current = true;
@@ -89,7 +89,7 @@ export const AuthProvider = ({ children }) => {
     verificarUsuario();
 
     return () => {
-      isMounted.current = false; // Limpieza para no setear estado si desmontado
+      isMounted.current = false;
     };
   }, []);
 

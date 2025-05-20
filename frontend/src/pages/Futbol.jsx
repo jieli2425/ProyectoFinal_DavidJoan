@@ -32,7 +32,6 @@ const Futbol = () => {
       .then(setPartidosChampionsLeague);
   }, []);
 
-  // Solo partidos de fútbol
   const partidosFutbol = partidos.filter(p => p.deporte === 'futbol');
 
   const scrollToSection = (sectionId) => {

@@ -18,7 +18,6 @@ const HomeUsuario = () => {
   const [partidosPremierLeague, setPartidosPremierLeague] = useState([]);
   const [partidosChampionsLeague, setPartidosChampionsLeague] = useState([]);
 
-  // Estados para búsqueda
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [partidoSeleccionado, setPartidoSeleccionado] = useState(null);

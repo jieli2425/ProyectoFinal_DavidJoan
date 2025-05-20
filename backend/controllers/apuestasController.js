@@ -11,9 +11,7 @@ const registrarApuesta = async (req, res) => {
     if (!partido) {
       return res.status(404).json({ message: 'Partido no encontrado' });
     }
-    // if (partido.estado !== 'pendiente') {
-    //   return res.status(400).json({ message: 'No se pueden realizar apuestas en este partido' });
-    // }
+
     if (partido.estado !== 'pendiente') {
       if (partido.estado === 'finalizado') {
         partido.estado = 'pendiente';
@@ -24,7 +22,7 @@ const registrarApuesta = async (req, res) => {
           console.log(`Partido ${partidoId} volvió a estado finalizado tras 5 segundos`);
         }, 5000);
       } else {
-        // Si no está pendiente ni finalizado (por ejemplo 'en_curso'), no se permite apostar
+
         return res.status(400).json({ message: 'No se pueden realizar apuestas en este partido' });
       }
     }
@@ -93,43 +91,8 @@ const obtenerApuestas = async (req, res) => {
   }
 };
 
-// const resolverApuestasFinalizadas = async (req, res) => {
-//   try {
-//     const apuestasPendientes = await Apuesta.find({ resultado: 'pendiente' }).populate('partido usuario');
-
-//     const apuestasFinalizadas = apuestasPendientes.filter(a => a.partido.estado === 'finalizado');
-
-//     const resultados = [];
-
-//     for (const apuesta of apuestasFinalizadas) {
-//       const esGanadora = apuesta.eleccion === apuesta.partido.ganador;
-//       apuesta.ganadora = esGanadora;
-//       apuesta.resultado = esGanadora ? 'ganada' : 'perdida';
-
-//       if (esGanadora) {
-//         const usuario = await Usuario.findById(apuesta.usuario._id);
-//         usuario.monedas += apuesta.monto;
-//         await usuario.save();
-//       }
-
-//       await apuesta.save();
-
-//       resultados.push({
-//         apuestaId: apuesta._id,
-//         resultado: apuesta.resultado,
-//         ganadora: apuesta.ganadora,
-//       });
-//     }
-
-//     res.status(200).json({ message: 'Apuestas resueltas', resultados });
-//   } catch (error) {
-//     console.error('Error al resolver apuestas:', error);
-//     res.status(500).json({ message: 'Error al resolver apuestas finalizadas' });
-//   }
-// };
 const resolverApuestasFinalizadas = async (req, res) => {
   try {
-    // Buscar apuestas pendientes
     const apuestasPendientes = await Apuesta.find({ resultado: 'pendiente' }).populate('partido usuario');
 
     const apuestasFinalizadas = apuestasPendientes.filter(a => a.partido !== null && a.partido.estado === 'finalizado');
@@ -149,7 +112,6 @@ const resolverApuestasFinalizadas = async (req, res) => {
         await usuario.save();
       }
 
-      // Guardamos el partido para resetear luego
       partidosParaResetear.add(apuesta.partido._id.toString());
 
       await apuesta.save();

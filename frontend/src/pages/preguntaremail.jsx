@@ -15,7 +15,7 @@ const PreguntarEmail = () => {
   setMsg('');
 
   try {
-    const res = await fetch(`${API_URL}/api/auth/solicitar-reset`, {  // URL backend fija aquí
+    const res = await fetch(`${API_URL}/api/auth/solicitar-reset`, { 
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email }),

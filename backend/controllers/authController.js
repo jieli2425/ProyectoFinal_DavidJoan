@@ -106,10 +106,9 @@ const solicitarResetPassword = async (req, res) => {
     const token = jwt.sign(
       { userId: usuario._id },
       process.env.JWT_SECRET,
-      { expiresIn: '15m' } // token válido por 15 minutos
+      { expiresIn: '15m' } 
     );
 
-    // Puedes enviar esto por email, pero tú lo enviarás al frontend para redirigir
     res.status(200).json({ token });
 
   } catch (error) {
@@ -125,7 +124,6 @@ const resetPassword = async (req, res) => {
       return res.status(400).json({ msg: 'Faltan datos obligatorios' });
     }
 
-    // Verificamos token
     let decoded;
     try {
       decoded = jwt.verify(token, process.env.JWT_SECRET);

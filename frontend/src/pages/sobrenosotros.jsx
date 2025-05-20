@@ -1,7 +1,7 @@
 import React from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import '../../css/terminos.css'; // Reutilizamos los estilos existentes
+import '../../css/terminos.css';
 
 const SobreNosotros = () => {
     return (

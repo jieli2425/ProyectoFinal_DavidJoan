@@ -12,9 +12,6 @@ router.get('/', verificarToken, obtenerApuestas);
 // Obtener apuestas de un usuario específico (admin o autorización necesaria)
 router.get('/usuario/:usuarioId', verificarToken, obtenerApuestas);
 
-// Resolver una apuesta (solo admins)
-// router.put('/:apuestaId/resolver', verificarToken, resolverApuesta);
-
 router.put('/resolver-finalizadas', verificarToken, resolverApuestasFinalizadas);
 
 module.exports = router;
