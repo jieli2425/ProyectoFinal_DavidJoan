@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
+import { useNavigate } from 'react-router-dom'; 
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import MonedaIcon from '../assets/monedaoronav.png';
@@ -21,6 +22,7 @@ const PuntosTienda = () => {
   const [userId, setUserId] = useState(null);
   const [token, setToken] = useState(null);
   const { setMonedas } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const packs = [
     { id: 1, puntos: 1000 },
@@ -62,6 +64,8 @@ const PuntosTienda = () => {
           if (data.nuevasMonedas !== undefined) {
             setMonedas(data.nuevasMonedas);
           }
+          alert(`Has canjeado ${selectedPack.puntos.toLocaleString()} monedas`);
+          navigate('/usuario');
         } else {
           console.error('Error al actualizar los puntos');
         }
