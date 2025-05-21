@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import '../../css/ApuestaPopup.css'; 
 import logoJOLIazul from '../assets/LogoJOLIazul.png';
 
 const ApuestaPopup = ({ partido, onClose, onApostar, actualizarUsuario }) => {
+  const navigate = useNavigate(); 
   const [monedasApostadas, setMonedasApostadas] = useState('');
   const [error, setError] = useState("");
   const token = localStorage.getItem('token');
@@ -69,11 +71,13 @@ const ApuestaPopup = ({ partido, onClose, onApostar, actualizarUsuario }) => {
         throw new Error(data.message || 'Error al registrar apuesta');
       }
       
-      // Actualizar monedas localmente y en localStorage
       actualizarUsuario(data.monedasRestantes);
 
       onApostar();
       onClose();
+
+      navigate('/mis-apuestas'); 
+
     } catch (error) {
       console.error('Error al apostar:', error);
       setError(error.message || 'Error al conectar con el servidor');

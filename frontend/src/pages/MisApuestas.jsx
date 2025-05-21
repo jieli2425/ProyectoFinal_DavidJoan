@@ -8,32 +8,6 @@ const MisApuestas = () => {
   const token = localStorage.getItem('token');
   const usuario = JSON.parse(localStorage.getItem('usuario'));
 
-  // useEffect(() => {
-  //   const fetchApuestas = async () => {
-  //     try {
-  //       const res = await fetch(`/api/apuestas/usuario/${usuario._id}`, {
-  //         headers: {
-  //           Authorization: `Bearer ${token}`
-  //         }
-  //       });
-
-  //       if (!res.ok) throw new Error('Error al obtener apuestas');
-  //       const data = await res.json();
-  //       setApuestas(data);
-  //     } catch (error) {
-  //       console.error(error);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   if (usuario && usuario._id) {
-  //     fetchApuestas();
-  //   } else {
-  //     setLoading(false);
-  //   }
-  // }, [usuario]);
-
   useEffect(() => {
   const fetchApuestas = async () => {
     try {
@@ -62,12 +36,31 @@ const MisApuestas = () => {
 
   if (usuario && usuario._id) {
     fetchApuestas();
-    const interval = setInterval(fetchApuestas, 30000); // cada 30 segundos
+    const interval = setInterval(fetchApuestas, 30000);
     return () => clearInterval(interval);
   } else {
     setLoading(false);
   }
 }, [usuario?._id]);
+
+const handleBorrarFinalizadas = async () => {
+    try {
+      const res = await fetch(`/api/apuestas/finalizadas/${usuario._id}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      if (!res.ok) throw new Error('Error al borrar apuestas finalizadas');
+      
+      const pendientes = apuestas.filter(a => a.resultado === 'pendiente');
+      setApuestas(pendientes);
+    } catch (error) {
+      console.error(error);
+      alert('Hubo un error al borrar las apuestas finalizadas');
+    }
+  };
 
   return (
     <>
@@ -89,6 +82,7 @@ const MisApuestas = () => {
           ) : apuestas.length === 0 ? (
             <p>No has realizado ninguna apuesta.</p>
           ) : (
+            <>
             <ul style={{ listStyle: 'none', padding: 0 }}>
               {apuestas.map((apuesta) => (
                 <li key={apuesta._id} style={{ borderBottom: '1px solid #eee', padding: '1rem 0' }}>
@@ -100,6 +94,22 @@ const MisApuestas = () => {
                 </li>
               ))}
             </ul>
+            <div style={{ textAlign: 'center', marginTop: '2rem' }}>
+                <button
+                  onClick={handleBorrarFinalizadas}
+                  style={{
+                    backgroundColor: '#dc3545',
+                    color: 'white',
+                    padding: '0.75rem 1.5rem',
+                    border: 'none',
+                    borderRadius: '8px',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Borrar Apuestas
+                </button>
+              </div>
+            </>
           )}
         </div>
       </div>

@@ -1,6 +1,7 @@
 const Apuesta = require('../models/Apuesta');
 const Partido = require('../models/Partido');
 const Usuario = require('../models/Usuario');
+const mongoose = require('mongoose');
 
 const registrarApuesta = async (req, res) => {
   try {
@@ -135,8 +136,31 @@ const resolverApuestasFinalizadas = async (req, res) => {
   }
 };
 
+const eliminarMisApuestas = async (req, res) => {
+  try {
+    const usuarioId = req.params.usuarioId;
+
+    if (!mongoose.Types.ObjectId.isValid(usuarioId)) {
+      return res.status(400).json({ error: 'ID de usuario inválido' });
+    }
+
+    const resultado = await Apuesta.deleteMany({
+      usuario: new mongoose.Types.ObjectId(usuarioId)
+    });
+
+    res.status(200).json({
+      mensaje: 'Todas las apuestas eliminadas correctamente',
+      eliminadas: resultado.deletedCount
+    });
+  } catch (error) {
+    console.error('Error al eliminar apuestas:', error);
+    res.status(500).json({ error: 'Error del servidor al eliminar apuestas' });
+  }
+};
+
 module.exports = { 
   registrarApuesta, 
   obtenerApuestas,
-  resolverApuestasFinalizadas
+  resolverApuestasFinalizadas,
+  eliminarMisApuestas
 };

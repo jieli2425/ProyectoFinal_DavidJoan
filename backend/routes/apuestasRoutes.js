@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { registrarApuesta, obtenerApuestas, resolverApuestasFinalizadas } = require('../controllers/apuestasController');
+const { registrarApuesta, obtenerApuestas, resolverApuestasFinalizadas, eliminarMisApuestas } = require('../controllers/apuestasController');
 const { verificarToken } = require('../middlewares/auth');
 
 // Registrar una nueva apuesta
@@ -13,5 +13,7 @@ router.get('/', verificarToken, obtenerApuestas);
 router.get('/usuario/:usuarioId', verificarToken, obtenerApuestas);
 
 router.put('/resolver-finalizadas', verificarToken, resolverApuestasFinalizadas);
+
+router.delete('/finalizadas/:usuarioId', verificarToken, eliminarMisApuestas);
 
 module.exports = router;
